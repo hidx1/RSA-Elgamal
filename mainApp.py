@@ -1,11 +1,13 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import sys
 import helper
+import decimal
 
 class mainApp(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
         Dialog.resize(682, 636)
+        decimal.getcontext().prec = 100
         # self.onlyInt = QtGui.QIntValidator()
         self.label = QtWidgets.QLabel(Dialog)
         self.label.setGeometry(QtCore.QRect(20, 20, 61, 16))
@@ -13,17 +15,8 @@ class mainApp(object):
         
         #Input Text Edit
         self.textEdit = QtWidgets.QTextEdit(Dialog)
-        self.textEdit.setGeometry(QtCore.QRect(20, 50, 241, 231))
+        self.textEdit.setGeometry(QtCore.QRect(20, 50, 491, 231))
         self.textEdit.setObjectName("textEdit")
-
-        self.label_2 = QtWidgets.QLabel(Dialog)
-        self.label_2.setGeometry(QtCore.QRect(270, 20, 71, 16))
-        self.label_2.setObjectName("label_2")
-
-        #Output Text Edit
-        self.textEdit_2 = QtWidgets.QTextEdit(Dialog)
-        self.textEdit_2.setGeometry(QtCore.QRect(270, 50, 241, 231))
-        self.textEdit_2.setObjectName("textEdit_2")
 
         self.label_3 = QtWidgets.QLabel(Dialog)
         self.label_3.setGeometry(QtCore.QRect(20, 340, 55, 16))
@@ -215,7 +208,6 @@ class mainApp(object):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
         self.label.setText(_translate("Dialog", "Input Text"))
-        self.label_2.setText(_translate("Dialog", "Result Text"))
         self.label_3.setText(_translate("Dialog", "Logs"))
         self.groupBox.setTitle(_translate("Dialog", "RSA"))
         self.label_4.setText(_translate("Dialog", "p"))
@@ -250,17 +242,44 @@ class mainApp(object):
         self.lineEdit_2.setReadOnly(value)
         self.lineEdit_3.setReadOnly(value)
 
-    def RSA(self, p, q, e):
+    def RSA(self, p, q, e, codedText):
+        self.textEdit_3.append(">Creating public key")
         n = p*q
+        publicKey = f"({e},{n})"
+        self.textEdit_3.append(f">RSA public key = {publicKey}")
+        helper.writeKeyToFile(publicKey, 0)
+        
+        self.textEdit_3.append(">Creating private key")
         toitent = (p-1)*(q-1)
-        d = 0.1
+        d = decimal.Decimal(0.1)
         k = 0
-        while not d.is_integer():
+        while not d == d.to_integral_value():
             k += 1
-            d = (1 + k*toitent) / e
-        d = int(d)
-        helper.writeToFile(f"({e},{n})", 0)
-        helper.writeToFile(f"({d},{toitent})", 1)
+            d = (decimal.Decimal(1) + decimal.Decimal(k)*decimal.Decimal(toitent)) / decimal.Decimal(e)
+        d = d.to_integral_value()
+        
+        privateKey = f"({d},{toitent})"
+        self.textEdit_3.append(f">RSA private key = {privateKey}")
+        helper.writeKeyToFile(privateKey, 1)
+
+        self.textEdit_3.append(">Starting encryption")
+        
+        cipherText = ""
+        for i in range(int(len(codedText)/6)):
+            block = codedText[i*6:i*6+6]
+            if (block[0:3] == "256"):
+                block = block[3:6]
+            elif (block[3:6] == "256"):
+                block = block[0:3]
+            code = str(pow(int(block), e, n))
+            headingLength = 6-len(code)
+            for j in range(headingLength):
+                code = '0' + code
+            cipherText += code
+        self.textEdit_3.append(">Encryption finished")
+        self.textEdit_3.append(f">Ciphertext = {cipherText}")
+        # helper.writeCodeToFile(cipherText)
+        self.textEdit_3.append("--------------------------------------------------------------------------------------------")
 
     def encrypt(self):
         mode = 0
@@ -268,6 +287,8 @@ class mainApp(object):
             mode = 1
         
         # try:
+        inputText = self.textEdit.toPlainText()
+        codedText = helper.codeMessage(inputText)
         dh_n = int(self.lineEdit_8.text())
         dh_g = int(self.lineEdit_9.text())
         dh_x = int(self.lineEdit_10.text())
@@ -279,14 +300,17 @@ class mainApp(object):
             p = int(self.lineEdit.text())
             q = int(self.lineEdit_2.text())
             e = int(self.lineEdit_3.text())
-            self.RSA(p, q, e)
+            self.textEdit_3.append(f">p = {p}")
+            self.textEdit_3.append(f">q = {q}")
+            self.textEdit_3.append(f">e = {e}")
+            self.textEdit_3.append(">Starting RSA")
+            self.RSA(p, q, e, codedText)
         else: #Elgamal
             p = int(self.lineEdit_4.text())
             g = int(self.lineEdit_5.text())
             x = int(self.lineEdit_6.text())
             k = int(self.lineEdit_7.text())
-
-        inputText = self.textEdit.toPlainText()
+            
         # except ValueError:
         #     self.textEdit_3.append(">ERROR: Could not convert input to int")
         # except:
