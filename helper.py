@@ -5,6 +5,7 @@ def egcd(a, b):
         g, y, x = egcd(b % a, a)
         return (g, x - (b // a) * y, y)
 
+
 def modinv(a, m):
     g, x, y = egcd(a, m)
     if g != 1:
@@ -17,7 +18,7 @@ def writeKeyToFile(data, mode):
         f = open("public.pub", "w")
     else:
         f = open("private.pri", "w")
-    
+
     f.write(data)
     f.close()
 
@@ -45,6 +46,9 @@ def codeMessage(msg):
     if (len(result) % 6 != 0):
         result += "256"
     return result
+
+def diffie_helman(n, g, x, y):
+    return pow((pow(g, x) % n), (pow(g, y) % n)) % n
 
 def gcd(p, q):
     while q != 0:
