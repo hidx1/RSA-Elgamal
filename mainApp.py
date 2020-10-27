@@ -1,5 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import sys
+import helper
 
 class mainApp(object):
     def setupUi(self, Dialog):
@@ -249,27 +250,47 @@ class mainApp(object):
         self.lineEdit_2.setReadOnly(value)
         self.lineEdit_3.setReadOnly(value)
 
+    def RSA(self, p, q, e):
+        n = p*q
+        toitent = (p-1)*(q-1)
+        d = 0.1
+        k = 0
+        while not d.is_integer():
+            k += 1
+            d = (1 + k*toitent) / e
+        d = int(d)
+        helper.writeToFile(f"({e},{n})", 0)
+        helper.writeToFile(f"({d},{toitent})", 1)
+
     def encrypt(self):
         mode = 0
         if (self.withElgamal):
             mode = 1
         
-        if (mode == 0):
-            p = self.lineEdit.text()
-            q = self.lineEdit_2.text()
-            e = self.lineEdit_3.text()
-        else:
-            p = self.lineEdit_4.text()
-            g = self.lineEdit_5.text()
-            x = self.lineEdit_6.text()
-            k = self.lineEdit_7.text()
+        # try:
+        dh_n = int(self.lineEdit_8.text())
+        dh_g = int(self.lineEdit_9.text())
+        dh_x = int(self.lineEdit_10.text())
+        dh_y = int(self.lineEdit_11.text())
 
-        dh_n = self.lineEdit_8.text()
-        dh_g = self.lineEdit_9.text()
-        dh_x = self.lineEdit_10.text()
-        dh_y = self.lineEdit_11.text()
+        #Get Diffie-Helman Session Key
+
+        if (mode == 0): #RSA
+            p = int(self.lineEdit.text())
+            q = int(self.lineEdit_2.text())
+            e = int(self.lineEdit_3.text())
+            self.RSA(p, q, e)
+        else: #Elgamal
+            p = int(self.lineEdit_4.text())
+            g = int(self.lineEdit_5.text())
+            x = int(self.lineEdit_6.text())
+            k = int(self.lineEdit_7.text())
 
         inputText = self.textEdit.toPlainText()
+        # except ValueError:
+        #     self.textEdit_3.append(">ERROR: Could not convert input to int")
+        # except:
+        #     self.textEdit_3.append(">ERROR: Unhandled error case occured")
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
