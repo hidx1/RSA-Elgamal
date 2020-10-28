@@ -1,5 +1,6 @@
 import os
 
+
 def egcd(a, b):
     if a == 0:
         return (b, 0, 1)
@@ -15,6 +16,7 @@ def modinv(a, m):
     else:
         return x % m
 
+
 def writeToFile(data, mode):
     if (mode == 0):
         f = open("public.pub", "w")
@@ -25,6 +27,7 @@ def writeToFile(data, mode):
 
     f.write(data)
     f.close()
+
 
 def readFromFile(file_name):
     extension = os.path.splitext(file_name)[1]
@@ -54,7 +57,8 @@ def codeMessage(msg):
 
 
 def diffie_helman(n, g, x, y):
-    return pow(pow(g, x, n), y, n)
+    return pow(g, x * y, n)
+
 
 def el_gamal_encrypt():
     return
@@ -62,6 +66,7 @@ def el_gamal_encrypt():
 
 def el_gamal_decrypt():
     return
+
 
 def gcd(p, q):
     while q != 0:
