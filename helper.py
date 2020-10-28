@@ -18,11 +18,11 @@ def modinv(a, m):
 
 
 def writeToFile(data, mode):
-    if (mode == 0):
+    if (mode == 0): #write public key file
         f = open("public.pub", "w")
-    elif (mode == 1):
+    elif (mode == 1): #write private key file
         f = open("private.pri", "w")
-    else:
+    else: #write ciphertext file
         f = open("cipherText.ecr", "w")
 
     f.write(data)
@@ -37,22 +37,37 @@ def readFromFile(file_name):
         is_cipherText = True
         f = open(file_name, "r")
         data = f.read()
+    elif extension == ".pub" or extension == ".pri":
+        f = open(file_name, "r")
+        data = f.read()
+        splitted = data.split(",")
+        return int(splitted[0]), int(splitted[1])
     else:
         f = open(file_name, "rb")
+        data = []
+        byte = f.read(1)
+        while byte:
+            data.append(ord(byte))
+            byte = f.read(1)
     f.close()
     return data, is_cipherText
 
 
-def codeMessage(msg):
+def codeMessage(msg, mode):
     result = ""
-    for char in msg:
-        code = str(ord(char))
-        headingLength = 3 - len(code)
-        for i in range(headingLength):
-            code = '0' + code
+    for data in msg:
+        if (mode == 0):
+            code = str(ord(data))
+        else:
+            code = str(data)
+        paddingLength = 3 - len(code)
+        padding = '0' * paddingLength
+        code = padding + code
         result += code
-    if (len(result) % 6 != 0):
-        result += "256"
+    
+    # if (len(result) % 6 != 0):
+    #     result += "256"
+
     return result
 
 
@@ -76,10 +91,3 @@ def gcd(p, q):
 
 def is_coprime(x, y):
     return gcd(x, y) == 1
-
-
-if __name__ == "__main__":
-    for i in range(1000000000000000000000000000000000000000000000000000000000000000000000000000):
-        if (is_coprime(i,
-                       1210145036063417205622974722189679300425594239971785447214628764089958055217275328377339625440400256608307406736692769091333622175530734487728425224810942804559270668428759323294557805268314468224293367130593570261803241958640659109949848064843598016986040681231330709222324227117155849109075659061411541132721)):
-            print(i)
