@@ -1,3 +1,5 @@
+import os
+
 def egcd(a, b):
     if a == 0:
         return (b, 0, 1)
@@ -13,27 +15,29 @@ def modinv(a, m):
     else:
         return x % m
 
-def writeKeyToFile(data, mode):
+def writeToFile(data, mode):
     if (mode == 0):
         f = open("public.pub", "w")
-    else:
+    elif (mode == 1):
         f = open("private.pri", "w")
+    else:
+        f = open("cipherText.ecr", "w")
 
     f.write(data)
     f.close()
 
-def writeCodeToFile(codedText):
-    f = open("cipherText.txt", "w")
-    result = ""
-    for i in range(int(len(codedText)/3)):
-        print(f"i: {i}")
-        block = codedText[i*3:i*3+3]
-        print(f"block: {block}")
-        char = chr(int(block))
-        result += char
-    print(f"result: {result}")
-    f.write(char)
+def readFromFile(file_name):
+    extension = os.path.splitext(file_name)[1]
+    data = None
+    is_cipherText = False
+    if extension == ".ecr":
+        is_cipherText = True
+        f = open(file_name, "r")
+        data = f.read()
+    else:
+        f = open(file_name, "rb")
     f.close()
+    return data, is_cipherText
 
 def codeMessage(msg):
     result = ""
@@ -48,7 +52,7 @@ def codeMessage(msg):
     return result
 
 def diffie_helman(n, g, x, y):
-    return pow((pow(g, x) % n), (pow(g, y) % n)) % n
+    return pow(pow(g, x, n), y, n)
 
 def gcd(p, q):
     while q != 0:

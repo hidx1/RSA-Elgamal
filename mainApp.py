@@ -8,6 +8,7 @@ class mainApp(object):
         Dialog.setObjectName("Dialog")
         Dialog.resize(682, 636)
         decimal.getcontext().prec = 100
+        self.byteArray = None
         # self.onlyInt = QtGui.QIntValidator()
         self.label = QtWidgets.QLabel(Dialog)
         self.label.setGeometry(QtCore.QRect(20, 20, 61, 16))
@@ -15,9 +16,18 @@ class mainApp(object):
         
         #Input Text Edit
         self.textEdit = QtWidgets.QTextEdit(Dialog)
-        self.textEdit.setGeometry(QtCore.QRect(20, 50, 491, 231))
+        self.textEdit.setGeometry(QtCore.QRect(20, 50, 245, 231))
         self.textEdit.setObjectName("textEdit")
 
+        #Output Text Edit
+        self.label_2 = QtWidgets.QLabel(Dialog)
+        self.label_2.setGeometry(QtCore.QRect(270, 20, 71, 16))
+        self.label_2.setObjectName("label_2")
+        self.textEdit_2 = QtWidgets.QTextEdit(Dialog)
+        self.textEdit_2.setGeometry(QtCore.QRect(270, 50, 245, 231))
+        self.textEdit_2.setObjectName("textEdit_2")
+        self.textEdit_2.setReadOnly(True)
+        
         self.label_3 = QtWidgets.QLabel(Dialog)
         self.label_3.setGeometry(QtCore.QRect(20, 340, 55, 16))
         self.label_3.setObjectName("label_3")
@@ -200,6 +210,7 @@ class mainApp(object):
         self.pushButton_3 = QtWidgets.QPushButton(Dialog)
         self.pushButton_3.setGeometry(QtCore.QRect(20, 290, 93, 28))
         self.pushButton_3.setObjectName("pushButton_3")
+        self.pushButton_3.clicked.connect(self.openFileNameDialog)
 
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
@@ -208,6 +219,7 @@ class mainApp(object):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
         self.label.setText(_translate("Dialog", "Input Text"))
+        self.label_2.setText(_translate("Dialog", "Result Text"))
         self.label_3.setText(_translate("Dialog", "Logs"))
         self.groupBox.setTitle(_translate("Dialog", "RSA"))
         self.label_4.setText(_translate("Dialog", "p"))
@@ -241,45 +253,49 @@ class mainApp(object):
         self.lineEdit.setReadOnly(value)
         self.lineEdit_2.setReadOnly(value)
         self.lineEdit_3.setReadOnly(value)
+    
+    def openFileNameDialog(self):
+        fileName = QtWidgets.QFileDialog.getOpenFileName()[0]
+        self.textEdit_3.append(f">Reading file '{fileName}'")
+        byteArray, is_cipherText = helper.readFromFile(fileName)
+        self.textEdit_3.append(">Reading file done")
+        if (is_cipherText):
+            self.textEdit_3.append(">File is ciphertext. Decrypting")
+            # self.decypt
+        else:
+            self.byteArray = byteArray
 
-    def RSA(self, p, q, e, codedText):
+    def RSA(self, p, q, e):
         self.textEdit_3.append(">Creating public key")
-        n = p*q
-        publicKey = f"({e},{n})"
-        self.textEdit_3.append(f">RSA public key = {publicKey}")
-        helper.writeKeyToFile(publicKey, 0)
-        
-        self.textEdit_3.append(">Creating private key")
-        toitent = (p-1)*(q-1)
-        d = decimal.Decimal(0.1)
-        k = 0
-        while not d == d.to_integral_value():
-            k += 1
-            d = (decimal.Decimal(1) + decimal.Decimal(k)*decimal.Decimal(toitent)) / decimal.Decimal(e)
-        d = d.to_integral_value()
-        
-        privateKey = f"({d},{toitent})"
-        self.textEdit_3.append(f">RSA private key = {privateKey}")
-        helper.writeKeyToFile(privateKey, 1)
+        if (p >= 503 and q >= 503):
+            n = p*q
+            publicKey = f"({e},{n})"
+            self.textEdit_3.append(f">n = {n}")
+            self.textEdit_3.append(f">RSA public key = {publicKey}")
+            helper.writeToFile(publicKey, 0)
+            
+            self.textEdit_3.append(">Creating private key")
+            toitent = (p-1)*(q-1)
+            
+            if (helper.is_coprime(toitent, e)):
+                d = decimal.Decimal(0.1)
+                k = 0
+                while not d == d.to_integral_value():
+                    k += 1
+                    d = (decimal.Decimal(1) + decimal.Decimal(k)*decimal.Decimal(toitent)) / decimal.Decimal(e)
+                d = d.to_integral_value()
+                
+                privateKey = f"({d},{n})"
+                self.textEdit_3.append(f">d = {d}")
+                self.textEdit_3.append(f">RSA private key = {privateKey}")
+                helper.writeToFile(privateKey, 1)
 
-        self.textEdit_3.append(">Starting encryption")
-        
-        cipherText = ""
-        for i in range(int(len(codedText)/6)):
-            block = codedText[i*6:i*6+6]
-            if (block[0:3] == "256"):
-                block = block[3:6]
-            elif (block[3:6] == "256"):
-                block = block[0:3]
-            code = str(pow(int(block), e, n))
-            headingLength = 6-len(code)
-            for j in range(headingLength):
-                code = '0' + code
-            cipherText += code
-        self.textEdit_3.append(">Encryption finished")
-        self.textEdit_3.append(f">Ciphertext = {cipherText}")
-        # helper.writeCodeToFile(cipherText)
-        self.textEdit_3.append("--------------------------------------------------------------------------------------------")
+                return n, d
+                
+            else:
+                self.textEdit_3.append(">ERROR: Value of e must be coprime of toitent.")
+        else:
+            self.textEdit_3.append(">ERROR: Value of p or q too low. Result of p*q must be bigger than 255255.")
 
     def encrypt(self):
         mode = 0
@@ -287,34 +303,137 @@ class mainApp(object):
             mode = 1
         
         # try:
-        inputText = self.textEdit.toPlainText()
-        codedText = helper.codeMessage(inputText)
+        if (self.byteArray):
+            codedText = self.byteArray #code byteArray
+            self.byteArray = None
+        else:
+            inputText = self.textEdit.toPlainText()
+            codedText = helper.codeMessage(inputText)
         dh_n = int(self.lineEdit_8.text())
         dh_g = int(self.lineEdit_9.text())
         dh_x = int(self.lineEdit_10.text())
         dh_y = int(self.lineEdit_11.text())
+        
+        if (dh_g < dh_n):
+            #Get Diffie-Helman Session Key
+            self.textEdit_3.append(">Generating session key.")
+            sessionKey = helper.diffie_helman(dh_n, dh_g, dh_x, dh_y)
+            self.textEdit_3.append(f">Session key = {sessionKey}")
 
-        #Get Diffie-Helman Session Key
+            if (mode == 0): #RSA
+                p = int(self.lineEdit.text())
+                q = int(self.lineEdit_2.text())
+                e = int(self.lineEdit_3.text())
+                self.textEdit_3.append(f">p = {p}")
+                self.textEdit_3.append(f">q = {q}")
+                self.textEdit_3.append(f">e = {e}")
+                self.textEdit_3.append(">Starting RSA")
 
-        if (mode == 0): #RSA
-            p = int(self.lineEdit.text())
-            q = int(self.lineEdit_2.text())
-            e = int(self.lineEdit_3.text())
-            self.textEdit_3.append(f">p = {p}")
-            self.textEdit_3.append(f">q = {q}")
-            self.textEdit_3.append(f">e = {e}")
-            self.textEdit_3.append(">Starting RSA")
-            self.RSA(p, q, e, codedText)
-        else: #Elgamal
-            p = int(self.lineEdit_4.text())
-            g = int(self.lineEdit_5.text())
-            x = int(self.lineEdit_6.text())
-            k = int(self.lineEdit_7.text())
+                n, d = self.RSA(p, q, e)
+                self.textEdit_3.append(">Starting encryption")
+                
+                cipherText = ""
+                for i in range(int(len(codedText)/6)):
+                    block = codedText[i*6:i*6+6]
+                    if (block[0:3] == "256"):
+                        block = block[3:6]
+                    elif (block[3:6] == "256"):
+                        block = block[0:3]
+                    code = str(pow(int(block), e, n))
+                    headingLength = 6-len(code)
+                    for j in range(headingLength):
+                        code = '0' + code
+                    cipherText += code
+                self.textEdit_3.append(">Encryption finished")
+                self.textEdit_3.append(f">Ciphertext = {cipherText}")
+                self.textEdit_3.append(">Writing ciphertext to cipherText.ecr")
+                self.textEdit_2.setText(cipherText)
+                helper.writeToFile(cipherText, 2)
+                self.textEdit_3.append(">Ciphertext saved to cipherText.ecr")
+                self.textEdit_3.append("")
+
+            else: #Elgamal
+                p = int(self.lineEdit_4.text())
+                g = int(self.lineEdit_5.text())
+                x = int(self.lineEdit_6.text())
+                k = int(self.lineEdit_7.text())
+        else:
+            self.textEdit_3.append(">ERROR: Value of Diffie-Helman g must be smaller than n")
             
         # except ValueError:
         #     self.textEdit_3.append(">ERROR: Could not convert input to int")
         # except:
         #     self.textEdit_3.append(">ERROR: Unhandled error case occured")
+    
+    def decrypt(self, cipherText):
+        mode = 0
+        if (self.withElgamal):
+            mode = 1
+        
+        # try:
+        if (self.byteArray):
+            codedText = self.byteArray #code byteArray
+            self.byteArray = None
+        else:
+            inputText = self.textEdit.toPlainText()
+            codedText = helper.codeMessage(inputText)
+        dh_n = int(self.lineEdit_8.text())
+        dh_g = int(self.lineEdit_9.text())
+        dh_x = int(self.lineEdit_10.text())
+        dh_y = int(self.lineEdit_11.text())
+        
+        if (dh_g < dh_n):
+            #Get Diffie-Helman Session Key
+            self.textEdit_3.append(">Generating session key.")
+            sessionKey = helper.diffie_helman(dh_n, dh_g, dh_x, dh_y)
+            self.textEdit_3.append(f">Session key = {sessionKey}")
+
+            if (mode == 0): #RSA
+                p = int(self.lineEdit.text())
+                q = int(self.lineEdit_2.text())
+                e = int(self.lineEdit_3.text())
+                self.textEdit_3.append(f">p = {p}")
+                self.textEdit_3.append(f">q = {q}")
+                self.textEdit_3.append(f">e = {e}")
+                self.textEdit_3.append(">Starting RSA")
+
+                n, d = self.RSA(p, q, e)
+                self.textEdit_3.append(">Starting decryption.")
+                plainText = self.decryptFromCodedText(cipherText, d, n)
+                self.textEdit_3.append(">Decryption done.")
+                self.textEdit_3.append(f">Plaintext = {plainText}")
+
+            else: #Elgamal
+                p = int(self.lineEdit_4.text())
+                g = int(self.lineEdit_5.text())
+                x = int(self.lineEdit_6.text())
+                k = int(self.lineEdit_7.text())
+        else:
+            self.textEdit_3.append(">ERROR: Value of Diffie-Helman g must be smaller than n")
+            
+        # except ValueError:
+        #     self.textEdit_3.append(">ERROR: Could not convert input to int")
+        # except:
+        #     self.textEdit_3.append(">ERROR: Unhandled error case occured")
+    
+    def decryptFromCodedText(self, codedText, d, n):
+        plainCode = ""
+        for i in range(int(len(codedText)/6)):
+            block = codedText[i*6:i*6+6]
+            code = str(pow(int(block), d, n))
+            headingLength = 6-len(code)
+            for j in range(headingLength):
+                code = '0' + code
+            plainCode += code
+
+        result = ""
+        for i in range(int(len(plainCode)/3)):
+            block = plainCode[i*3:i*3+3]
+            code = int(block)
+            if (code > 0):
+                char = chr(code)
+                result += char
+        print(result)
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
