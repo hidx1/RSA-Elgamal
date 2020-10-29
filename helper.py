@@ -1,15 +1,17 @@
 import os
 
+
 def writeToFile(data, mode):
-    if (mode == 0): #write public key file
+    if (mode == 0):  # write public key file
         f = open("public.pub", "w")
-    elif (mode == 1): #write private key file
+    elif (mode == 1):  # write private key file
         f = open("private.pri", "w")
-    else: #write ciphertext file
+    else:  # write ciphertext file
         f = open("cipherText.ecr", "w")
 
     f.write(data)
     f.close()
+
 
 def writePlainText(byteArray, file_name):
     result = bytes(byteArray)
@@ -53,7 +55,7 @@ def codeMessage(msg, mode):
         padding = '0' * paddingLength
         code = padding + code
         result += code
-    
+
     # if (len(result) % 6 != 0):
     #     result += "256"
 
@@ -64,18 +66,11 @@ def diffie_helman(n, g, x, y):
     return pow(g, x * y, n)
 
 
-def el_gamal_encrypt():
-    return
-
-
-def el_gamal_decrypt():
-    return
-
-
 def gcd(p, q):
     while q != 0:
         p, q = q, p % q
     return p
+
 
 def is_coprime(x, y):
     return gcd(x, y) == 1
