@@ -664,21 +664,19 @@ class mainApp(object):
                         self.textEdit_3.append(f">p = {p}")
                     if (self.lineEdit_5.text()):
                         g = int(self.lineEdit_5.text())
-                        self.textEdit_3.append(f">q = {g}")
+                        self.textEdit_3.append(f">g = {g}")
                     if (self.lineEdit_6.text()):
                         x = int(self.lineEdit_6.text())
-                        self.textEdit_3.append(f">e = {x}")
+                        self.textEdit_3.append(f">x = {x}")
                     if (self.lineEdit_7.text()):
                         k = int(self.lineEdit_7.text())
-                        self.textEdit_3.append(f">d = {k}")
+                        self.textEdit_3.append(f">k = {k}")
                     if (self.lineEdit_14.text()):
                         y = int(self.lineEdit_14.text())
-                        self.textEdit_3.append(f">n = {y}")
-
-                    if (self.y):
-                        y = copy.copy(self.y)
-                    self.y = None
-
+                        self.textEdit_3.append(f">y = {y}")
+                    # if (self.y):
+                    #     y = copy.copy(self.y)
+                    # self.y = None
                     if (sender == 0):  # encrypt
                         self.textEdit_3.append(">Starting ElGamal")
                         if (not k):
@@ -838,18 +836,19 @@ class mainApp(object):
             x = data[2]
 
             plainCode = ""
-            codedText_a = data[0][:len(codedText)]
-            codedText_b = data[0][len(codedText):]
-            amount = math.ceil(len(codedText_a) / 6)
+            codedLength = int(len(codedText) / 2)
+            codedText_a = codedText[:codedLength]
+            codedText_b = codedText[codedLength:]
+            amount = math.ceil(codedLength / 6)
             for i in range(amount):
-                block_a = codedText_a[i * 6:i * 6 + 6]
-                block_b = codedText_b[i * 6:i * 6 + 6]
-                code = str((int(block_b) / pow(int(block_a), x)) % p)
+                block_a = int(codedText_a[i * 6:i * 6 + 6])
+                block_b = int(codedText_b[i * 6:i * 6 + 6])
+                temp = pow(block_a, p - 1 - x, p)
+                code = str((block_b * temp) % p)
                 paddingLength = 6 - len(code)
                 padding = '0' * paddingLength
                 code = padding + code
                 plainCode += code
-
             plainText = ""
             byteArray = []
             charAmount = int(len(plainCode) / 3)
