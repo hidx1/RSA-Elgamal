@@ -1,15 +1,16 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import sys
 import helper
-import decimal
+# import decimal
 import math
 import copy
+import time
 
 class mainApp(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
         Dialog.resize(682, 690)
-        decimal.getcontext().prec = 100
+        # decimal.getcontext().prec = 100
         self.inputFileData = None
         self.e = None
         self.d = None
@@ -330,30 +331,38 @@ class mainApp(object):
         self.lineEdit_13.setReadOnly(value)
     
     def openInputFileNameDialog(self):
-        fileName = QtWidgets.QFileDialog.getOpenFileName()[0]
-        self.textEdit_3.append(f">Reading input file '{fileName}'")
-        inputData, is_cipherText = helper.readFromFile(fileName)
-        self.textEdit_3.append(">Reading file done.")
-        if (is_cipherText):
-            self.textEdit.setText(inputData)
-            self.checkBox.setChecked(True)
-        else:
-            self.checkBox.setChecked(False)
-        self.inputFileData = (inputData, is_cipherText)
+        try:
+            fileName = QtWidgets.QFileDialog.getOpenFileName()[0]
+            self.textEdit_3.append(f">Reading input file '{fileName}'")
+            inputData, is_cipherText = helper.readFromFile(fileName)
+            self.textEdit_3.append(">Reading file done.")
+            self.textEdit_3.append(f">Input file size = {len(inputData)} bytes.")
+            if (is_cipherText):
+                if (len(inputData) < 16000):
+                    self.textEdit.setText(inputData)
+                self.checkBox.setChecked(True)
+            else:
+                self.checkBox.setChecked(False)
+            self.inputFileData = (inputData, is_cipherText)
+        except FileNotFoundError:
+            pass
     
     def openKeyFileNameDialog(self, keyType):
-        fileName = QtWidgets.QFileDialog.getOpenFileName()[0]
-        if (keyType == 0):
-            self.textEdit_3.append(f">Reading public key file '{fileName}'")
-            self.e, self.n = helper.readFromFile(fileName)
-            self.lineEdit_3.setText(str(self.e))
-            self.lineEdit_13.setText(str(self.n))
-        else:
-            self.textEdit_3.append(f">Reading private key file '{fileName}'")
-            self.d, self.n = helper.readFromFile(fileName)
-            self.lineEdit_12.setText(str(self.d))
-            self.lineEdit_13.setText(str(self.n))
-        self.textEdit_3.append(">Reading file done.")
+        try:
+            fileName = QtWidgets.QFileDialog.getOpenFileName()[0]
+            if (keyType == 0):
+                self.textEdit_3.append(f">Reading public key file '{fileName}'")
+                self.e, self.n = helper.readFromFile(fileName)
+                self.lineEdit_3.setText(str(self.e))
+                self.lineEdit_13.setText(str(self.n))
+            else:
+                self.textEdit_3.append(f">Reading private key file '{fileName}'")
+                self.d, self.n = helper.readFromFile(fileName)
+                self.lineEdit_12.setText(str(self.d))
+                self.lineEdit_13.setText(str(self.n))
+            self.textEdit_3.append(">Reading file done.")
+        except FileNotFoundError:
+            pass
 
     def RSA(self, p, q, e, d_, n_):
         self.textEdit_3.append(">Creating public key.")
@@ -376,12 +385,13 @@ class mainApp(object):
             toitent = (p-1)*(q-1)
             
             if (helper.is_coprime(toitent, e)):
-                d = decimal.Decimal(0.1)
-                k = 0
-                while not d == d.to_integral_value():
-                    k += 1
-                    d = (decimal.Decimal(1) + decimal.Decimal(k)*decimal.Decimal(toitent)) / decimal.Decimal(e)
-                d = d.to_integral_value()
+                d = pow(e, -1, toitent)
+                # d = decimal.Decimal(0.1)
+                # k = 0
+                # while not d == d.to_integral_value():
+                #     k += 1
+                #     d = (decimal.Decimal(1) + decimal.Decimal(k)*decimal.Decimal(toitent)) / decimal.Decimal(e)
+                # d = d.to_integral_value()
 
                 privateKey = f"{d},{n}"
                 self.textEdit_3.append(f">d = {d}")
@@ -401,7 +411,8 @@ class mainApp(object):
             if (self.inputFileData):
                 if (self.inputFileData[1]): #cipherText
                     codedText = copy.copy(self.inputFileData[0])
-                    self.textEdit.setText(codedText)
+                    if (len(codedText) < 16000):
+                        self.textEdit.setText(codedText)
                 else:
                     codedText = helper.codeMessage(self.inputFileData[0], 1)
                 self.inputFileData = None
@@ -471,13 +482,23 @@ class mainApp(object):
                         
                         n = self.RSA(p, q, e, d, n)
                         data = (codedText, e, n)
+                        startTime = time.time()
                         self.encrypt(mode, data)
+                        endTime = time.time()
+                        elapsedTime = endTime - startTime
+                        self.textEdit_3.append(f">Encryption time: {elapsedTime} sec")
+                        self.textEdit_3.append("")
                     else: #decrypt   
                         if (not self.lineEdit_15.text()):
                             raise ParamNotFilled
                         if (d and n):
                             data = (codedText, d, n)
+                            startTime = time.time()
                             self.decrypt(mode, data)
+                            endTime = time.time()
+                            elapsedTime = endTime - startTime
+                            self.textEdit_3.append(f">Decryption time: {elapsedTime} sec")
+                            self.textEdit_3.append("")
                         else:
                             raise ParamNotFilled
                 else: #Elgamal
@@ -498,8 +519,6 @@ class mainApp(object):
             self.textEdit_3.append(">ERROR: Value of p*q must be bigger than 255255")
         except RSAPublicKeyNotCoprime:
             self.textEdit_3.append(">ERROR: Value of e must be coprime of toitent.")
-        except FileNotFoundError:
-            pass
         # except ValueError:
         #     self.textEdit_3.append(">ERROR: Could not convert input to int")
         # except:
@@ -515,7 +534,7 @@ class mainApp(object):
             amount = math.ceil(len(codedText)/6)
             # print(f"amount: {amount}")
             for i in range(amount):
-                # print(f"{i/amount}%")
+                # print(f"Encrypting: {(i+1)/amount}")
                 block = codedText[i*6:i*6+6]
                 code = str(pow(int(block), e, n))
                 paddingLength = 6-len(code)
@@ -524,10 +543,14 @@ class mainApp(object):
                 cipherText += code
             self.textEdit_3.append(">RSA encryption finished")
             self.textEdit_3.append(">Writing ciphertext to cipherText.ecr")
-            self.textEdit_2.setText(cipherText)
+            print("Set ciphertext")
+            if (len(cipherText) < 16000):
+                self.textEdit_2.setText(cipherText)
+            print("Writing ciphertext to file")
             helper.writeToFile(cipherText, 2)
             self.textEdit_3.append(">Ciphertext saved to cipherText.ecr")
             self.textEdit_3.append("")
+            self.textEdit_3.append(f">Ciphertext file size = {len(cipherText)} bytes.")
         else:
             print("Elgamal encrypt")
     
@@ -539,9 +562,10 @@ class mainApp(object):
             n = data[2]
             
             plainCode = ""
+            cleanDiv = len(codedText)/6 == 0
             amount = math.ceil(len(codedText)/6)
             for i in range(amount):
-                # print(f"{i/amount}%")
+                # print(f"Decrypting phase 1: {(i+1)/amount}")
                 block = codedText[i*6:i*6+6]
                 code = str(pow(int(block), d, n))
                 paddingLength = 6-len(code)
@@ -551,26 +575,31 @@ class mainApp(object):
 
             plainText = ""
             byteArray = []
-            for i in range(int(len(plainCode)/3)):
+            charAmount = int(len(plainCode)/3)
+            for i in range(charAmount):
+                # print(f"Decrypting phase 2: {(i+1)/charAmount}")
                 block = plainCode[i*3:i*3+3]
                 code = int(block)
-                byteArray.append(code)
-                if (code > 0):
+                if (not cleanDiv and i == charAmount-2):
+                    pass
+                else:
+                    byteArray.append(code)
                     char = chr(code)
                     plainText += char
 
             self.textEdit_3.append(">Decryption done.")
-            self.textEdit_2.setText(plainText)
-            self.saveDecryptResult(byteArray)
+            print("Set plaintext")
+            if (len(plainText) < 16000):
+                self.textEdit_2.setText(plainText)
+            print("Writing plaintext to file")
+            
+            fileName = self.lineEdit_15.text()
+            helper.writePlainText(byteArray, fileName)
+            self.textEdit_3.append(f">Plaintext saved to {fileName}")
             self.textEdit_3.append("")
+            self.textEdit_3.append(f">Plaintext file size = {len(plainText)} bytes.")
         else: #Elgamal
             print("Elgamal decrypt")
-    
-    def saveDecryptResult(self, byteArray):
-        fileName = self.lineEdit_15.text()
-        self.textEdit_3.append(f">Saving plaintext to {fileName}")
-        helper.writePlainText(byteArray, fileName)
-        self.textEdit_3.append(f">Plaintext saved to {fileName}")
 
 class Error(Exception):
     #Base class for other exceptions

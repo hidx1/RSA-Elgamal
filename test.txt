@@ -21,3 +21,17 @@ plainText = HELLO ALICE
 codedText  = 072 069 076 076 079 032 065 076 073 067 069 (256)
 cipherText = 061 954 290 534 259 332 033 649 066 821 217 039
 decrypted  = 072 069 076 076 079 032 065 076 073 067 069
+
+FILE 31.2KB
+file size = 31976 bytes
+encryption time = 0.0579986572265625 sec
+ciphertext size =  95928 bytes (300% increase)
+decryption time = 0.09896063804626465 sec
+plaintext size = 31975 bytes
+
+FILE 3.49MB
+file size = 3666933 bytes
+encryption time = 605.1466076374054 sec
+ciphertext size = 11000802 bytes (300% increase)
+decryption time = 1812.2020781040192 sec
+plaintext size = 3666933 bytes
