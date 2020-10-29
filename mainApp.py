@@ -5,11 +5,12 @@ import helper
 import math
 import copy
 import time
+from Crypto.Util import number
 
 class mainApp(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
-        Dialog.resize(682, 690)
+        Dialog.resize(758, 691)
         # decimal.getcontext().prec = 100
         self.inputFileData = None
         self.e = None
@@ -45,7 +46,7 @@ class mainApp(object):
         self.textEdit_3.setReadOnly(True)
 
         self.groupBox = QtWidgets.QGroupBox(Dialog)
-        self.groupBox.setGeometry(QtCore.QRect(520, 70, 151, 181))
+        self.groupBox.setGeometry(QtCore.QRect(520, 70, 231, 181))
         self.groupBox.setObjectName("groupBox")
         self.formLayoutWidget = QtWidgets.QWidget(self.groupBox)
         self.formLayoutWidget.setGeometry(QtCore.QRect(10, 30, 131, 141))
@@ -117,8 +118,30 @@ class mainApp(object):
         self.lineEdit_13.setObjectName("lineEdit_13")
         
         self.formLayout.setWidget(4, QtWidgets.QFormLayout.FieldRole, self.lineEdit_13)
+
+        #RSA generate p value
+        self.pushButton_6 = QtWidgets.QPushButton(self.groupBox)
+        self.pushButton_6.setGeometry(QtCore.QRect(150, 28, 71, 25))
+        self.pushButton_6.setMinimumSize(QtCore.QSize(0, 0))
+        self.pushButton_6.setObjectName("pushButton_6")
+        self.pushButton_6.clicked.connect(lambda: self.generateRandomPrime(0))
+
+        #RSA generate q value
+        self.pushButton_7 = QtWidgets.QPushButton(self.groupBox)
+        self.pushButton_7.setGeometry(QtCore.QRect(150, 58, 71, 25))
+        self.pushButton_7.setMinimumSize(QtCore.QSize(0, 0))
+        self.pushButton_7.setObjectName("pushButton_7")
+        self.pushButton_7.clicked.connect(lambda: self.generateRandomPrime(1))
+
+        #RSA generate e value
+        self.pushButton_8 = QtWidgets.QPushButton(self.groupBox)
+        self.pushButton_8.setGeometry(QtCore.QRect(150, 88, 71, 25))
+        self.pushButton_8.setMinimumSize(QtCore.QSize(0, 0))
+        self.pushButton_8.setObjectName("pushButton_8")
+        self.pushButton_8.clicked.connect(lambda: self.generateCoprime(2))
+
         self.groupBox_2 = QtWidgets.QGroupBox(Dialog)
-        self.groupBox_2.setGeometry(QtCore.QRect(520, 250, 151, 181))
+        self.groupBox_2.setGeometry(QtCore.QRect(520, 250, 231, 181))
         self.groupBox_2.setObjectName("groupBox_2")
         self.formLayoutWidget_2 = QtWidgets.QWidget(self.groupBox_2)
         self.formLayoutWidget_2.setGeometry(QtCore.QRect(10, 30, 131, 140))
@@ -180,8 +203,37 @@ class mainApp(object):
         self.lineEdit_14.setReadOnly(True)
 
         self.formLayout_2.setWidget(4, QtWidgets.QFormLayout.FieldRole, self.lineEdit_14)
+
+        #Elgamal generate p value
+        self.pushButton_9 = QtWidgets.QPushButton(self.groupBox_2)
+        self.pushButton_9.setGeometry(QtCore.QRect(150, 28, 71, 25))
+        self.pushButton_9.setMinimumSize(QtCore.QSize(0, 0))
+        self.pushButton_9.setObjectName("pushButton_9")
+        self.pushButton_9.clicked.connect(lambda: self.generateRandomPrime(3))
+
+        #Elgamal generate g value
+        self.pushButton_10 = QtWidgets.QPushButton(self.groupBox_2)
+        self.pushButton_10.setGeometry(QtCore.QRect(150, 58, 71, 25))
+        self.pushButton_10.setMinimumSize(QtCore.QSize(0, 0))
+        self.pushButton_10.setObjectName("pushButton_10")
+        self.pushButton_10.clicked.connect(lambda: self.generateRandomNumber(4))
+
+        #Elgamal generate x value
+        self.pushButton_11 = QtWidgets.QPushButton(self.groupBox_2)
+        self.pushButton_11.setGeometry(QtCore.QRect(150, 88, 71, 25))
+        self.pushButton_11.setMinimumSize(QtCore.QSize(0, 0))
+        self.pushButton_11.setObjectName("pushButton_11")
+        self.pushButton_11.clicked.connect(lambda: self.generateRandomNumber(5))
+
+        #Elgamal generate k value
+        self.pushButton_12 = QtWidgets.QPushButton(self.groupBox_2)
+        self.pushButton_12.setGeometry(QtCore.QRect(150, 117, 71, 25))
+        self.pushButton_12.setMinimumSize(QtCore.QSize(0, 0))
+        self.pushButton_12.setObjectName("pushButton_12")
+        self.pushButton_12.clicked.connect(lambda: self.generateRandomNumber(6))
+
         self.groupBox_3 = QtWidgets.QGroupBox(Dialog)
-        self.groupBox_3.setGeometry(QtCore.QRect(520, 430, 151, 151))
+        self.groupBox_3.setGeometry(QtCore.QRect(520, 430, 231, 151))
         self.groupBox_3.setObjectName("groupBox_3")
         self.formLayoutWidget_3 = QtWidgets.QWidget(self.groupBox_3)
         self.formLayoutWidget_3.setGeometry(QtCore.QRect(10, 30, 131, 111))
@@ -230,15 +282,43 @@ class mainApp(object):
 
         self.formLayout_3.setWidget(3, QtWidgets.QFormLayout.FieldRole, self.lineEdit_11)
 
+        #Diffie-Helman generate n value
+        self.pushButton_13 = QtWidgets.QPushButton(self.groupBox_3)
+        self.pushButton_13.setGeometry(QtCore.QRect(150, 28, 71, 25))
+        self.pushButton_13.setMinimumSize(QtCore.QSize(0, 0))
+        self.pushButton_13.setObjectName("pushButton_13")
+        self.pushButton_13.clicked.connect(lambda: self.generateRandomPrime(7))
+
+        #Diffie-Helman generate g value
+        self.pushButton_14 = QtWidgets.QPushButton(self.groupBox_3)
+        self.pushButton_14.setGeometry(QtCore.QRect(150, 58, 71, 25))
+        self.pushButton_14.setMinimumSize(QtCore.QSize(0, 0))
+        self.pushButton_14.setObjectName("pushButton_14")
+        self.pushButton_14.clicked.connect(lambda: self.generateRandomPrime(8))
+
+        #Diffie-Helman generate x value
+        self.pushButton_15 = QtWidgets.QPushButton(self.groupBox_3)
+        self.pushButton_15.setGeometry(QtCore.QRect(150, 88, 71, 25))
+        self.pushButton_15.setMinimumSize(QtCore.QSize(0, 0))
+        self.pushButton_15.setObjectName("pushButton_15")
+        self.pushButton_15.clicked.connect(lambda: self.generateRandomNumber(9))
+
+        #Diffie-Helman generate y value
+        self.pushButton_16 = QtWidgets.QPushButton(self.groupBox_3)
+        self.pushButton_16.setGeometry(QtCore.QRect(150, 117, 71, 25))
+        self.pushButton_16.setMinimumSize(QtCore.QSize(0, 0))
+        self.pushButton_16.setObjectName("pushButton_16")
+        self.pushButton_16.clicked.connect(lambda: self.generateRandomNumber(10))
+
         #Encrypt Button
         self.pushButton = QtWidgets.QPushButton(Dialog)
-        self.pushButton.setGeometry(QtCore.QRect(520, 610, 151, 28))
+        self.pushButton.setGeometry(QtCore.QRect(520, 610, 221, 28))
         self.pushButton.setObjectName("pushButton")
         self.pushButton.clicked.connect(lambda: self.handleSubmit(0))
 
         #Decrypt Button
         self.pushButton_2 = QtWidgets.QPushButton(Dialog)
-        self.pushButton_2.setGeometry(QtCore.QRect(520, 650, 151, 28))
+        self.pushButton_2.setGeometry(QtCore.QRect(520, 650, 221, 28))
         self.pushButton_2.setObjectName("pushButton_2")
         self.pushButton_2.clicked.connect(lambda: self.handleSubmit(1))
 
@@ -294,6 +374,9 @@ class mainApp(object):
         self.label_6.setText(_translate("Dialog", "e"))
         self.label_15.setText(_translate("Dialog", "d"))
         self.label_16.setText(_translate("Dialog", "n"))
+        self.pushButton_6.setText(_translate("Dialog", "Generate"))
+        self.pushButton_7.setText(_translate("Dialog", "Generate"))
+        self.pushButton_8.setText(_translate("Dialog", "Generate"))
 
         self.groupBox_2.setTitle(_translate("Dialog", "Elgamal"))
         self.label_7.setText(_translate("Dialog", "p"))
@@ -301,12 +384,20 @@ class mainApp(object):
         self.label_9.setText(_translate("Dialog", "x"))
         self.label_10.setText(_translate("Dialog", "k"))
         self.label_17.setText(_translate("Dialog", "y"))
+        self.pushButton_9.setText(_translate("Dialog", "Generate"))
+        self.pushButton_10.setText(_translate("Dialog", "Generate"))
+        self.pushButton_11.setText(_translate("Dialog", "Generate"))
+        self.pushButton_12.setText(_translate("Dialog", "Generate"))
 
         self.groupBox_3.setTitle(_translate("Dialog", "Diffie-Helman"))
         self.label_11.setText(_translate("Dialog", "n"))
         self.label_12.setText(_translate("Dialog", "g"))
         self.label_13.setText(_translate("Dialog", "x"))
         self.label_14.setText(_translate("Dialog", "y"))
+        self.pushButton_13.setText(_translate("Dialog", "Generate"))
+        self.pushButton_14.setText(_translate("Dialog", "Generate"))
+        self.pushButton_15.setText(_translate("Dialog", "Generate"))
+        self.pushButton_16.setText(_translate("Dialog", "Generate"))
 
         self.radioButton.setText(_translate("Dialog", "Use RSA"))
         self.radioButton_2.setText(_translate("Dialog", "Use Elgamal"))
@@ -363,6 +454,50 @@ class mainApp(object):
             self.textEdit_3.append(">Reading file done.")
         except FileNotFoundError:
             pass
+    
+    def generateRandomPrime(self, fieldID):
+        prime = number.getPrime(512)
+        if (fieldID == 0):
+            self.lineEdit.setText(str(prime))
+        elif (fieldID == 1):
+            self.lineEdit_2.setText(str(prime))
+        elif (fieldID == 3):
+            self.lineEdit_4.setText(str(prime))
+        elif (fieldID == 7):
+            self.lineEdit_8.setText(str(prime))
+        elif (fieldID == 8):
+            self.lineEdit_9.setText(str(prime))
+
+    def generateCoprime(self, fieldID):
+        try:
+            p = None
+            q = None
+            if (self.lineEdit.text()):
+                p = int(self.lineEdit.text())
+            if (self.lineEdit_2.text()):
+                q = int(self.lineEdit_2.text())
+            if (p and q):
+                toitent = (p-1)*(q-1)
+                coprime = number.getStrongPrime(512, toitent)
+                if (fieldID == 2):
+                    self.lineEdit_3.setText(str(coprime))
+            else:
+                raise GenerateCoprimeFail
+        except GenerateCoprimeFail:
+            self.textEdit_3.append(">ERROR: Value of p and q is not detected.")
+
+    def generateRandomNumber(self, fieldID):
+        randNum = number.getRandomInteger(512)
+        if (fieldID == 4):
+            self.lineEdit_5.setText(str(randNum))
+        elif (fieldID == 5):
+            self.lineEdit_6.setText(str(randNum))
+        elif (fieldID == 6):
+            self.lineEdit_7.setText(str(randNum))
+        elif (fieldID == 9):
+            self.lineEdit_10.setText(str(randNum))
+        elif (fieldID == 10):
+            self.lineEdit_11.setText(str(randNum))
 
     def RSA(self, p, q, e, d_, n_):
         self.textEdit_3.append(">Creating public key.")
@@ -532,12 +667,13 @@ class mainApp(object):
             n = data[2]
             cipherText = ""
             amount = math.ceil(len(codedText)/6)
+            nLength = len(str(n))
             # print(f"amount: {amount}")
             for i in range(amount):
                 # print(f"Encrypting: {(i+1)/amount}")
                 block = codedText[i*6:i*6+6]
                 code = str(pow(int(block), e, n))
-                paddingLength = 6-len(code)
+                paddingLength = nLength-len(code)
                 padding = '0' * paddingLength
                 code = padding + code
                 cipherText += code
@@ -560,13 +696,14 @@ class mainApp(object):
             codedText = data[0]
             d = data[1]
             n = data[2]
+            nLength = len(str(n))
             
             plainCode = ""
-            cleanDiv = len(codedText)/6 == 0
-            amount = math.ceil(len(codedText)/6)
+            cleanDiv = len(codedText)/nLength == 0
+            amount = math.ceil(len(codedText)/nLength)
             for i in range(amount):
                 # print(f"Decrypting phase 1: {(i+1)/amount}")
-                block = codedText[i*6:i*6+6]
+                block = codedText[i*nLength:i*nLength+nLength]
                 code = str(pow(int(block), d, n))
                 paddingLength = 6-len(code)
                 padding = '0' * paddingLength
@@ -574,7 +711,7 @@ class mainApp(object):
                 plainCode += code
 
             plainText = ""
-            byteArray = []
+            byteArray = []            
             charAmount = int(len(plainCode)/3)
             for i in range(charAmount):
                 # print(f"Decrypting phase 2: {(i+1)/charAmount}")
@@ -586,7 +723,7 @@ class mainApp(object):
                     byteArray.append(code)
                     char = chr(code)
                     plainText += char
-
+            
             self.textEdit_3.append(">Decryption done.")
             print("Set plaintext")
             if (len(plainText) < 16000):
@@ -623,6 +760,10 @@ class RSAPrimesTooLow(Error):
 
 class RSAPublicKeyNotCoprime(Error):
     #Value of e is not coprime of toitent
+    pass
+
+class GenerateCoprimeFail(Error):
+    #Value of p and q not known
     pass
 
 if __name__ == "__main__":
