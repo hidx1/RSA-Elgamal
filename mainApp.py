@@ -654,10 +654,60 @@ class mainApp(object):
                         else:
                             raise ParamNotFilled
                 else:  # Elgamal
-                    p = int(self.lineEdit_4.text())
-                    g = int(self.lineEdit_5.text())
-                    x = int(self.lineEdit_6.text())
-                    k = int(self.lineEdit_7.text())
+                    p = None
+                    g = None
+                    x = None
+                    k = None
+                    y = None
+                    if (self.lineEdit_4.text()):
+                        p = int(self.lineEdit_4.text())
+                        self.textEdit_3.append(f">p = {p}")
+                    if (self.lineEdit_5.text()):
+                        g = int(self.lineEdit_5.text())
+                        self.textEdit_3.append(f">q = {g}")
+                    if (self.lineEdit_6.text()):
+                        x = int(self.lineEdit_6.text())
+                        self.textEdit_3.append(f">e = {x}")
+                    if (self.lineEdit_7.text()):
+                        k = int(self.lineEdit_7.text())
+                        self.textEdit_3.append(f">d = {k}")
+                    if (self.lineEdit_14.text()):
+                        y = int(self.lineEdit_14.text())
+                        self.textEdit_3.append(f">n = {y}")
+
+                    if (self.y):
+                        y = copy.copy(self.y)
+                    self.y = None
+
+                    if (sender == 0):  # encrypt
+                        self.textEdit_3.append(">Starting ElGamal")
+                        if (not k):
+                            raise ParamNotFilled
+                        if (not y):
+                            if (not p or not g or not x or not k):
+                                raise ParamNotFilled
+
+                        y = self.elgamal(p, g, x, y)
+                        data = (codedText, p, g, k, y)
+                        startTime = time.time()
+                        self.encrypt(mode, data)
+                        endTime = time.time()
+                        elapsedTime = endTime - startTime
+                        self.textEdit_3.append(f">Encryption time: {elapsedTime} sec")
+                        self.textEdit_3.append("")
+                    else:  # decrypt
+                        if (not self.lineEdit_15.text()):
+                            raise ParamNotFilled
+                        if (d and n):
+                            data = (codedText, d, n)
+                            startTime = time.time()
+                            self.decrypt(mode, data)
+                            endTime = time.time()
+                            elapsedTime = endTime - startTime
+                            self.textEdit_3.append(f">Decryption time: {elapsedTime} sec")
+                            self.textEdit_3.append("")
+                        else:
+                            raise ParamNotFilled
             else:
                 raise DHBiggerG
 
@@ -705,7 +755,39 @@ class mainApp(object):
             self.textEdit_3.append("")
             self.textEdit_3.append(f">Ciphertext file size = {len(cipherText)} bytes.")
         else:
-            print("Elgamal encrypt")
+            self.textEdit_3.append(">Starting ElGamal encryption")
+            codedText = data[0]
+            p = data[1]
+            g = data[2]
+            k = data[3]
+            y = data[4]
+            cipherText = ""
+            cipherText_a = ""
+            cipherText_b = ""
+            amount = math.ceil(len(codedText) / 6)
+            for i in range(amount):
+                block = codedText[i * 6:i * 6 + 6]
+                code = str(pow(g, k, p))
+                paddingLength = 6 - len(code)
+                padding = '0' * paddingLength
+                code = padding + code
+                cipherText_a += code
+                code = str((int(block) * pow(y, k)) % p)
+                paddingLength = 6 - len(code)
+                padding = '0' * paddingLength
+                code = padding + code
+                cipherText_b += code
+                cipherText = cipherText_a + cipherText_b
+            self.textEdit_3.append(">ElGamal encryption finished")
+            self.textEdit_3.append(">Writing ciphertext to cipherText.ecr")
+            print("Set ciphertext")
+            if (len(cipherText) < 16000):
+                self.textEdit_2.setText(cipherText)
+            print("Writing ciphertext to file")
+            helper.writeToFile(cipherText, 2)
+            self.textEdit_3.append(">Ciphertext saved to cipherText.ecr")
+            self.textEdit_3.append("")
+            self.textEdit_3.append(f">Ciphertext file size = {len(cipherText)} bytes.")
 
     def decrypt(self, mode, data):
         if (mode == 0):  # RSA
