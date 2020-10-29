@@ -696,18 +696,15 @@ class mainApp(object):
                         self.textEdit_3.append(f">Encryption time: {elapsedTime} sec")
                         self.textEdit_3.append("")
                     else:  # decrypt
-                        if (not self.lineEdit_15.text()):
+                        if (not p or not x):
                             raise ParamNotFilled
-                        if (d and n):
-                            data = (codedText, d, n)
-                            startTime = time.time()
-                            self.decrypt(mode, data)
-                            endTime = time.time()
-                            elapsedTime = endTime - startTime
-                            self.textEdit_3.append(f">Decryption time: {elapsedTime} sec")
-                            self.textEdit_3.append("")
-                        else:
-                            raise ParamNotFilled
+                        data = (codedText, p, x)
+                        startTime = time.time()
+                        self.decrypt(mode, data)
+                        endTime = time.time()
+                        elapsedTime = endTime - startTime
+                        self.textEdit_3.append(f">Decryption time: {elapsedTime} sec")
+                        self.textEdit_3.append("")
             else:
                 raise DHBiggerG
 
@@ -835,7 +832,48 @@ class mainApp(object):
             self.textEdit_3.append("")
             self.textEdit_3.append(f">Plaintext file size = {len(plainText)} bytes.")
         else:  # Elgamal
-            print("Elgamal decrypt")
+            self.textEdit_3.append(">Starting decryption.")
+            codedText = data[0]
+            p = data[1]
+            x = data[2]
+
+            plainCode = ""
+            codedText_a = data[0][:len(codedText)]
+            codedText_b = data[0][len(codedText):]
+            amount = math.ceil(len(codedText_a) / 6)
+            for i in range(amount):
+                block_a = codedText_a[i * 6:i * 6 + 6]
+                block_b = codedText_b[i * 6:i * 6 + 6]
+                code = str((int(block_b) / pow(int(block_a), x)) % p)
+                paddingLength = 6 - len(code)
+                padding = '0' * paddingLength
+                code = padding + code
+                plainCode += code
+
+            plainText = ""
+            byteArray = []
+            charAmount = int(len(plainCode) / 3)
+            for i in range(charAmount):
+                block = plainCode[i * 3:i * 3 + 3]
+                code = int(block)
+                if (i == charAmount - 2):
+                    pass
+                else:
+                    byteArray.append(code)
+                    char = chr(code)
+                    plainText += char
+
+            self.textEdit_3.append(">Decryption done.")
+            print("Set plaintext")
+            if (len(plainText) < 16000):
+                self.textEdit_2.setText(plainText)
+            print("Writing plaintext to file")
+
+            fileName = self.lineEdit_15.text()
+            helper.writePlainText(byteArray, fileName)
+            self.textEdit_3.append(f">Plaintext saved to {fileName}")
+            self.textEdit_3.append("")
+            self.textEdit_3.append(f">Plaintext file size = {len(plainText)} bytes.")
 
 
 class Error(Exception):
