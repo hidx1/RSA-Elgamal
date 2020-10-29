@@ -7,6 +7,7 @@ import copy
 import time
 from Crypto.Util import number
 
+
 class mainApp(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
@@ -20,13 +21,13 @@ class mainApp(object):
         self.label = QtWidgets.QLabel(Dialog)
         self.label.setGeometry(QtCore.QRect(20, 20, 61, 16))
         self.label.setObjectName("label")
-        
-        #Input Text Edit
+
+        # Input Text Edit
         self.textEdit = QtWidgets.QTextEdit(Dialog)
         self.textEdit.setGeometry(QtCore.QRect(20, 50, 245, 231))
         self.textEdit.setObjectName("textEdit")
 
-        #Output Text Edit
+        # Output Text Edit
         self.label_2 = QtWidgets.QLabel(Dialog)
         self.label_2.setGeometry(QtCore.QRect(270, 20, 71, 16))
         self.label_2.setObjectName("label_2")
@@ -34,12 +35,12 @@ class mainApp(object):
         self.textEdit_2.setGeometry(QtCore.QRect(270, 50, 245, 231))
         self.textEdit_2.setObjectName("textEdit_2")
         self.textEdit_2.setReadOnly(True)
-        
+
         self.label_3 = QtWidgets.QLabel(Dialog)
         self.label_3.setGeometry(QtCore.QRect(20, 370, 55, 16))
         self.label_3.setObjectName("label_3")
 
-        #Logs Text Edit
+        # Logs Text Edit
         self.textEdit_3 = QtWidgets.QTextEdit(Dialog)
         self.textEdit_3.setGeometry(QtCore.QRect(20, 400, 491, 281))
         self.textEdit_3.setObjectName("textEdit_3")
@@ -61,20 +62,20 @@ class mainApp(object):
         self.withRSA = True
         self.withElgamal = False
 
-        #Use RSA radio button
+        # Use RSA radio button
         self.radioButton = QtWidgets.QRadioButton(Dialog)
         self.radioButton.setGeometry(QtCore.QRect(530, 20, 95, 20))
         self.radioButton.setObjectName("radioButton")
-        self.radioButton.setChecked(True) 
+        self.radioButton.setChecked(True)
         self.radioButton.toggled.connect(self.toggleRSA)
 
-        #Use Elgamal radio button
+        # Use Elgamal radio button
         self.radioButton_2 = QtWidgets.QRadioButton(Dialog)
         self.radioButton_2.setGeometry(QtCore.QRect(530, 40, 95, 20))
         self.radioButton_2.setObjectName("radioButton_2")
         self.radioButton_2.toggled.connect(self.toggleElgamal)
 
-        #RSA p value
+        # RSA p value
         self.lineEdit = QtWidgets.QLineEdit(self.formLayoutWidget)
         self.lineEdit.setObjectName("lineEdit")
         # self.lineEdit.setValidator(self.onlyInt)
@@ -84,7 +85,7 @@ class mainApp(object):
         self.label_5.setObjectName("label_5")
         self.formLayout.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.label_5)
 
-        #RSA q value
+        # RSA q value
         self.lineEdit_2 = QtWidgets.QLineEdit(self.formLayoutWidget)
         self.lineEdit_2.setObjectName("lineEdit_2")
         # self.lineEdit_2.setValidator(self.onlyInt)
@@ -94,7 +95,7 @@ class mainApp(object):
         self.label_6.setObjectName("label_6")
         self.formLayout.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.label_6)
 
-        #RSA e value
+        # RSA e value
         self.lineEdit_3 = QtWidgets.QLineEdit(self.formLayoutWidget)
         self.lineEdit_3.setObjectName("lineEdit_3")
         # self.lineEdit_3.setValidator(self.onlyInt)
@@ -104,19 +105,19 @@ class mainApp(object):
         self.label_15.setObjectName("label_15")
         self.formLayout.setWidget(3, QtWidgets.QFormLayout.LabelRole, self.label_15)
 
-        #RSA d value
+        # RSA d value
         self.lineEdit_12 = QtWidgets.QLineEdit(self.formLayoutWidget)
         self.lineEdit_12.setObjectName("lineEdit_12")
-        
+
         self.formLayout.setWidget(3, QtWidgets.QFormLayout.FieldRole, self.lineEdit_12)
         self.label_16 = QtWidgets.QLabel(self.formLayoutWidget)
         self.label_16.setObjectName("label_16")
         self.formLayout.setWidget(4, QtWidgets.QFormLayout.LabelRole, self.label_16)
 
-        #RSA n value
+        # RSA n value
         self.lineEdit_13 = QtWidgets.QLineEdit(self.formLayoutWidget)
         self.lineEdit_13.setObjectName("lineEdit_13")
-        
+
         self.formLayout.setWidget(4, QtWidgets.QFormLayout.FieldRole, self.lineEdit_13)
 
         #RSA generate p value
@@ -153,7 +154,7 @@ class mainApp(object):
         self.label_7.setObjectName("label_7")
         self.formLayout_2.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.label_7)
 
-        #Elgamal p value
+        # Elgamal p value
         self.lineEdit_4 = QtWidgets.QLineEdit(self.formLayoutWidget_2)
         self.lineEdit_4.setObjectName("lineEdit_4")
         # self.lineEdit_4.setValidator(self.onlyInt)
@@ -164,7 +165,7 @@ class mainApp(object):
         self.label_8.setObjectName("label_8")
         self.formLayout_2.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.label_8)
 
-        #Elgamal g value
+        # Elgamal g value
         self.lineEdit_5 = QtWidgets.QLineEdit(self.formLayoutWidget_2)
         self.lineEdit_5.setObjectName("lineEdit_5")
         # self.lineEdit_5.setValidator(self.onlyInt)
@@ -175,7 +176,7 @@ class mainApp(object):
         self.label_9.setObjectName("label_9")
         self.formLayout_2.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.label_9)
 
-        #Elgamal x value
+        # Elgamal x value
         self.lineEdit_6 = QtWidgets.QLineEdit(self.formLayoutWidget_2)
         self.lineEdit_6.setObjectName("lineEdit_6")
         # self.lineEdit_6.setValidator(self.onlyInt)
@@ -186,7 +187,7 @@ class mainApp(object):
         self.label_10.setObjectName("label_10")
         self.formLayout_2.setWidget(3, QtWidgets.QFormLayout.LabelRole, self.label_10)
 
-        #Elgamal k value
+        # Elgamal k value
         self.lineEdit_7 = QtWidgets.QLineEdit(self.formLayoutWidget_2)
         self.lineEdit_7.setObjectName("lineEdit_7")
         # self.lineEdit_7.setValidator(self.onlyInt)
@@ -197,7 +198,7 @@ class mainApp(object):
         self.label_17.setObjectName("label_17")
         self.formLayout_2.setWidget(4, QtWidgets.QFormLayout.LabelRole, self.label_17)
 
-        #Elgamal y value
+        # Elgamal y value
         self.lineEdit_14 = QtWidgets.QLineEdit(self.formLayoutWidget_2)
         self.lineEdit_14.setObjectName("lineEdit_14")
         self.lineEdit_14.setReadOnly(True)
@@ -245,7 +246,7 @@ class mainApp(object):
         self.label_11.setObjectName("label_11")
         self.formLayout_3.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.label_11)
 
-        #Diffie-Helman n value
+        # Diffie-Helman n value
         self.lineEdit_8 = QtWidgets.QLineEdit(self.formLayoutWidget_3)
         self.lineEdit_8.setObjectName("lineEdit_8")
         # self.lineEdit_8.setValidator(self.onlyInt)
@@ -255,7 +256,7 @@ class mainApp(object):
         self.label_12.setObjectName("label_12")
         self.formLayout_3.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.label_12)
 
-        #Diffie-Helman g value
+        # Diffie-Helman g value
         self.lineEdit_9 = QtWidgets.QLineEdit(self.formLayoutWidget_3)
         self.lineEdit_9.setObjectName("lineEdit_9")
         # self.lineEdit_9.setValidator(self.onlyInt)
@@ -265,7 +266,7 @@ class mainApp(object):
         self.label_13.setObjectName("label_13")
         self.formLayout_3.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.label_13)
 
-        #Diffie-Helman x value
+        # Diffie-Helman x value
         self.lineEdit_10 = QtWidgets.QLineEdit(self.formLayoutWidget_3)
         self.lineEdit_10.setObjectName("lineEdit_10")
         # self.lineEdit_10.setValidator(self.onlyInt)
@@ -275,7 +276,7 @@ class mainApp(object):
         self.label_14.setObjectName("label_14")
         self.formLayout_3.setWidget(3, QtWidgets.QFormLayout.LabelRole, self.label_14)
 
-        #Diffie-Helman y value
+        # Diffie-Helman y value
         self.lineEdit_11 = QtWidgets.QLineEdit(self.formLayoutWidget_3)
         self.lineEdit_11.setObjectName("lineEdit_11")
         # self.lineEdit_11.setValidator(self.onlyInt)
@@ -316,36 +317,36 @@ class mainApp(object):
         self.pushButton.setObjectName("pushButton")
         self.pushButton.clicked.connect(lambda: self.handleSubmit(0))
 
-        #Decrypt Button
+        # Decrypt Button
         self.pushButton_2 = QtWidgets.QPushButton(Dialog)
         self.pushButton_2.setGeometry(QtCore.QRect(520, 650, 221, 28))
         self.pushButton_2.setObjectName("pushButton_2")
         self.pushButton_2.clicked.connect(lambda: self.handleSubmit(1))
 
-        #Upload File Button
+        # Upload File Button
         self.pushButton_3 = QtWidgets.QPushButton(Dialog)
         self.pushButton_3.setGeometry(QtCore.QRect(20, 290, 121, 28))
         self.pushButton_3.setObjectName("pushButton_3")
         self.pushButton_3.clicked.connect(self.openInputFileNameDialog)
 
-        #Upload Public Key
+        # Upload Public Key
         self.pushButton_4 = QtWidgets.QPushButton(Dialog)
         self.pushButton_4.setGeometry(QtCore.QRect(210, 290, 141, 28))
         self.pushButton_4.setObjectName("pushButton_4")
         self.pushButton_4.clicked.connect(lambda: self.openKeyFileNameDialog(0))
 
-        #Upload Private Key
+        # Upload Private Key
         self.pushButton_5 = QtWidgets.QPushButton(Dialog)
         self.pushButton_5.setGeometry(QtCore.QRect(360, 290, 151, 28))
         self.pushButton_5.setObjectName("pushButton_5")
         self.pushButton_5.clicked.connect(lambda: self.openKeyFileNameDialog(1))
 
-        #Input Text is ciphertext checkbox
+        # Input Text is ciphertext checkbox
         self.checkBox = QtWidgets.QCheckBox(Dialog)
         self.checkBox.setGeometry(QtCore.QRect(20, 330, 171, 20))
         self.checkBox.setObjectName("checkBox")
 
-        #Result filename
+        # Result filename
         self.label_18 = QtWidgets.QLabel(Dialog)
         self.label_18.setGeometry(QtCore.QRect(339, 330, 141, 22))
         self.label_18.setObjectName("label_18")
@@ -412,7 +413,7 @@ class mainApp(object):
         self.lineEdit_6.setReadOnly(value)
         self.lineEdit_7.setReadOnly(value)
         self.lineEdit_14.setReadOnly(value)
-    
+
     def toggleElgamal(self, value):
         self.withElgamal = value
         self.lineEdit.setReadOnly(value)
@@ -420,7 +421,7 @@ class mainApp(object):
         self.lineEdit_3.setReadOnly(value)
         self.lineEdit_12.setReadOnly(value)
         self.lineEdit_13.setReadOnly(value)
-    
+
     def openInputFileNameDialog(self):
         try:
             fileName = QtWidgets.QFileDialog.getOpenFileName()[0]
@@ -437,7 +438,7 @@ class mainApp(object):
             self.inputFileData = (inputData, is_cipherText)
         except FileNotFoundError:
             pass
-    
+
     def openKeyFileNameDialog(self, keyType):
         try:
             fileName = QtWidgets.QFileDialog.getOpenFileName()[0]
@@ -505,20 +506,20 @@ class mainApp(object):
             n = n_
         else:
             if (p >= 503 and q >= 503):
-                n = p*q
+                n = p * q
             else:
                 raise RSAPrimesTooLow
         publicKey = f"{e},{n}"
         self.textEdit_3.append(f">n = {n}")
         self.textEdit_3.append(f">RSA public key = ({publicKey})")
         helper.writeToFile(publicKey, 0)
-        
+
         self.textEdit_3.append(">Creating private key")
         if (d_):
             d = d_
         else:
-            toitent = (p-1)*(q-1)
-            
+            toitent = (p - 1) * (q - 1)
+
             if (helper.is_coprime(toitent, e)):
                 d = pow(e, -1, toitent)
                 # d = decimal.Decimal(0.1)
@@ -537,14 +538,30 @@ class mainApp(object):
             else:
                 raise RSAPublicKeyNotCoprime
 
+    def elgamal(self, p, g, x, y_):
+        self.textEdit_3.append(">Creating public key")
+        if (y_):
+            y = y_
+        else:
+            y = pow(g, x, p)
+        publicKey = f"{y},{g},{p}"
+        self.textEdit_3.append(f">y = {y}")
+        self.textEdit_3.append(f">ElGamal public key = ({publicKey})")
+        helper.writeToFile(publicKey, 0)
+        self.textEdit_3.append(">Creating private key")
+        privateKey = f"{x},{p}"
+        self.textEdit_3.append(f">ElGamal private key = ({privateKey})")
+        helper.writeToFile(privateKey, 1)
+        return y
+
     def handleSubmit(self, sender):
         mode = 0
         if (self.withElgamal):
             mode = 1
-        
+
         try:
             if (self.inputFileData):
-                if (self.inputFileData[1]): #cipherText
+                if (self.inputFileData[1]):  # cipherText
                     codedText = copy.copy(self.inputFileData[0])
                     if (len(codedText) < 16000):
                         self.textEdit.setText(codedText)
@@ -557,11 +574,11 @@ class mainApp(object):
                     codedText = inputText
                 else:
                     codedText = helper.codeMessage(inputText, 0)
-            
+
             if (not self.lineEdit_8.text() or not \
-                self.lineEdit_9.text() or not \
-                self.lineEdit_10.text() or not \
-                self.lineEdit_11.text()):
+                    self.lineEdit_9.text() or not \
+                    self.lineEdit_10.text() or not \
+                    self.lineEdit_11.text()):
                 raise ParamNotFilled
             dh_n = int(self.lineEdit_8.text())
             dh_g = int(self.lineEdit_9.text())
@@ -569,12 +586,12 @@ class mainApp(object):
             dh_y = int(self.lineEdit_11.text())
 
             if (dh_g < dh_n):
-                #Get Diffie-Helman Session Key
+                # Get Diffie-Helman Session Key
                 self.textEdit_3.append(">Generating session key.")
                 sessionKey = helper.diffie_helman(dh_n, dh_g, dh_x, dh_y)
                 self.textEdit_3.append(f">Session key = {sessionKey}")
 
-                if (mode == 0): #RSA
+                if (mode == 0):  # RSA
                     p = None
                     q = None
                     e = None
@@ -603,8 +620,8 @@ class mainApp(object):
                     if (self.n):
                         n = copy.copy(self.n)
                     self.n = None
-                    
-                    if (sender == 0): #encrypt
+
+                    if (sender == 0):  # encrypt
                         self.textEdit_3.append(">Starting RSA")
                         if (not e):
                             raise ParamNotFilled
@@ -614,7 +631,7 @@ class mainApp(object):
                         if (not d):
                             if (not p or not q):
                                 raise RSAPrimesNotFilled
-                        
+
                         n = self.RSA(p, q, e, d, n)
                         data = (codedText, e, n)
                         startTime = time.time()
@@ -623,7 +640,7 @@ class mainApp(object):
                         elapsedTime = endTime - startTime
                         self.textEdit_3.append(f">Encryption time: {elapsedTime} sec")
                         self.textEdit_3.append("")
-                    else: #decrypt   
+                    else:  # decrypt
                         if (not self.lineEdit_15.text()):
                             raise ParamNotFilled
                         if (d and n):
@@ -636,13 +653,13 @@ class mainApp(object):
                             self.textEdit_3.append("")
                         else:
                             raise ParamNotFilled
-                else: #Elgamal
+                else:  # Elgamal
                     p = int(self.lineEdit_4.text())
                     g = int(self.lineEdit_5.text())
                     x = int(self.lineEdit_6.text())
                     k = int(self.lineEdit_7.text())
             else:
-               raise DHBiggerG 
+                raise DHBiggerG
 
         except ParamNotFilled:
             self.textEdit_3.append(">ERROR: One or more required param is not filled.")
@@ -671,7 +688,7 @@ class mainApp(object):
             # print(f"amount: {amount}")
             for i in range(amount):
                 # print(f"Encrypting: {(i+1)/amount}")
-                block = codedText[i*6:i*6+6]
+                block = codedText[i * 6:i * 6 + 6]
                 code = str(pow(int(block), e, n))
                 paddingLength = nLength-len(code)
                 padding = '0' * paddingLength
@@ -689,9 +706,9 @@ class mainApp(object):
             self.textEdit_3.append(f">Ciphertext file size = {len(cipherText)} bytes.")
         else:
             print("Elgamal encrypt")
-    
+
     def decrypt(self, mode, data):
-        if (mode == 0): #RSA
+        if (mode == 0):  # RSA
             self.textEdit_3.append(">Starting decryption.")
             codedText = data[0]
             d = data[1]
@@ -705,7 +722,7 @@ class mainApp(object):
                 # print(f"Decrypting phase 1: {(i+1)/amount}")
                 block = codedText[i*nLength:i*nLength+nLength]
                 code = str(pow(int(block), d, n))
-                paddingLength = 6-len(code)
+                paddingLength = 6 - len(code)
                 padding = '0' * paddingLength
                 code = padding + code
                 plainCode += code
@@ -715,9 +732,9 @@ class mainApp(object):
             charAmount = int(len(plainCode)/3)
             for i in range(charAmount):
                 # print(f"Decrypting phase 2: {(i+1)/charAmount}")
-                block = plainCode[i*3:i*3+3]
+                block = plainCode[i * 3:i * 3 + 3]
                 code = int(block)
-                if (not cleanDiv and i == charAmount-2):
+                if (not cleanDiv and i == charAmount - 2):
                     pass
                 else:
                     byteArray.append(code)
@@ -729,42 +746,51 @@ class mainApp(object):
             if (len(plainText) < 16000):
                 self.textEdit_2.setText(plainText)
             print("Writing plaintext to file")
-            
+
             fileName = self.lineEdit_15.text()
             helper.writePlainText(byteArray, fileName)
             self.textEdit_3.append(f">Plaintext saved to {fileName}")
             self.textEdit_3.append("")
             self.textEdit_3.append(f">Plaintext file size = {len(plainText)} bytes.")
-        else: #Elgamal
+        else:  # Elgamal
             print("Elgamal decrypt")
 
+
 class Error(Exception):
-    #Base class for other exceptions
+    # Base class for other exceptions
     pass
+
 
 class ParamNotFilled(Error):
-    #When a param is not filled
+    # When a param is not filled
     pass
+
 
 class DHBiggerG(Error):
-    #When g is bigger than n
+    # When g is bigger than n
     pass
+
 
 class RSAPrimesNotFilled(Error):
-    #Param p or q is not filled when n is not filled
+    # Param p or q is not filled when n is not filled
     pass
+
 
 class RSAPrimesTooLow(Error):
-    #Value of p*q is less than 255255
+    # Value of p*q is less than 255255
     pass
+
 
 class RSAPublicKeyNotCoprime(Error):
-    #Value of e is not coprime of toitent
+    # Value of e is not coprime of toitent
     pass
 
+<<<<<<< HEAD
 class GenerateCoprimeFail(Error):
     #Value of p and q not known
     pass
+=======
+>>>>>>> e902a99373cccebb8b7fd0b62f8ec08b5eac15c9
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
