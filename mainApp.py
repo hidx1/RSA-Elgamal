@@ -785,12 +785,9 @@ class RSAPublicKeyNotCoprime(Error):
     # Value of e is not coprime of toitent
     pass
 
-<<<<<<< HEAD
 class GenerateCoprimeFail(Error):
     #Value of p and q not known
     pass
-=======
->>>>>>> e902a99373cccebb8b7fd0b62f8ec08b5eac15c9
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
