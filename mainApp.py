@@ -8,9 +8,12 @@ import copy
 class mainApp(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
-        Dialog.resize(682, 670)
+        Dialog.resize(682, 690)
         decimal.getcontext().prec = 100
         self.inputFileData = None
+        self.e = None
+        self.d = None
+        self.n = None
         # self.onlyInt = QtGui.QIntValidator()
         self.label = QtWidgets.QLabel(Dialog)
         self.label.setGeometry(QtCore.QRect(20, 20, 61, 16))
@@ -31,12 +34,12 @@ class mainApp(object):
         self.textEdit_2.setReadOnly(True)
         
         self.label_3 = QtWidgets.QLabel(Dialog)
-        self.label_3.setGeometry(QtCore.QRect(20, 340, 55, 16))
+        self.label_3.setGeometry(QtCore.QRect(20, 370, 55, 16))
         self.label_3.setObjectName("label_3")
 
         #Logs Text Edit
         self.textEdit_3 = QtWidgets.QTextEdit(Dialog)
-        self.textEdit_3.setGeometry(QtCore.QRect(20, 370, 491, 281))
+        self.textEdit_3.setGeometry(QtCore.QRect(20, 400, 491, 281))
         self.textEdit_3.setObjectName("textEdit_3")
         self.textEdit_3.setReadOnly(True)
 
@@ -228,13 +231,13 @@ class mainApp(object):
 
         #Encrypt Button
         self.pushButton = QtWidgets.QPushButton(Dialog)
-        self.pushButton.setGeometry(QtCore.QRect(520, 590, 151, 28))
+        self.pushButton.setGeometry(QtCore.QRect(520, 610, 151, 28))
         self.pushButton.setObjectName("pushButton")
         self.pushButton.clicked.connect(lambda: self.handleSubmit(0))
 
         #Decrypt Button
         self.pushButton_2 = QtWidgets.QPushButton(Dialog)
-        self.pushButton_2.setGeometry(QtCore.QRect(520, 620, 151, 28))
+        self.pushButton_2.setGeometry(QtCore.QRect(520, 650, 151, 28))
         self.pushButton_2.setObjectName("pushButton_2")
         self.pushButton_2.clicked.connect(lambda: self.handleSubmit(1))
 
@@ -246,15 +249,28 @@ class mainApp(object):
 
         #Upload Public Key
         self.pushButton_4 = QtWidgets.QPushButton(Dialog)
-        self.pushButton_4.setGeometry(QtCore.QRect(150, 290, 141, 28))
+        self.pushButton_4.setGeometry(QtCore.QRect(210, 290, 141, 28))
         self.pushButton_4.setObjectName("pushButton_4")
         self.pushButton_4.clicked.connect(lambda: self.openKeyFileNameDialog(0))
 
         #Upload Private Key
         self.pushButton_5 = QtWidgets.QPushButton(Dialog)
-        self.pushButton_5.setGeometry(QtCore.QRect(300, 290, 151, 28))
+        self.pushButton_5.setGeometry(QtCore.QRect(360, 290, 151, 28))
         self.pushButton_5.setObjectName("pushButton_5")
         self.pushButton_5.clicked.connect(lambda: self.openKeyFileNameDialog(1))
+
+        #Input Text is ciphertext checkbox
+        self.checkBox = QtWidgets.QCheckBox(Dialog)
+        self.checkBox.setGeometry(QtCore.QRect(20, 330, 171, 20))
+        self.checkBox.setObjectName("checkBox")
+
+        #Result filename
+        self.label_18 = QtWidgets.QLabel(Dialog)
+        self.label_18.setGeometry(QtCore.QRect(339, 330, 141, 22))
+        self.label_18.setObjectName("label_18")
+        self.lineEdit_15 = QtWidgets.QLineEdit(Dialog)
+        self.lineEdit_15.setGeometry(QtCore.QRect(340, 350, 171, 22))
+        self.lineEdit_15.setObjectName("lineEdit_15")
 
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
@@ -265,30 +281,37 @@ class mainApp(object):
         self.label.setText(_translate("Dialog", "Input Text"))
         self.label_2.setText(_translate("Dialog", "Result Text"))
         self.label_3.setText(_translate("Dialog", "Logs"))
+        self.pushButton_3.setText(_translate("Dialog", "Upload Input File"))
+        self.pushButton_4.setText(_translate("Dialog", "Upload Public Key File"))
+        self.pushButton_5.setText(_translate("Dialog", "Upload Private Key File"))
+        self.checkBox.setText(_translate("Dialog", "Input is ciphertext?"))
+        self.label_18.setText(_translate("Dialog", "Decrypt result filename"))
+
         self.groupBox.setTitle(_translate("Dialog", "RSA"))
         self.label_4.setText(_translate("Dialog", "p"))
         self.label_5.setText(_translate("Dialog", "q"))
         self.label_6.setText(_translate("Dialog", "e"))
         self.label_15.setText(_translate("Dialog", "d"))
         self.label_16.setText(_translate("Dialog", "n"))
+
         self.groupBox_2.setTitle(_translate("Dialog", "Elgamal"))
         self.label_7.setText(_translate("Dialog", "p"))
         self.label_8.setText(_translate("Dialog", "g"))
         self.label_9.setText(_translate("Dialog", "x"))
         self.label_10.setText(_translate("Dialog", "k"))
         self.label_17.setText(_translate("Dialog", "y"))
+
         self.groupBox_3.setTitle(_translate("Dialog", "Diffie-Helman"))
         self.label_11.setText(_translate("Dialog", "n"))
         self.label_12.setText(_translate("Dialog", "g"))
         self.label_13.setText(_translate("Dialog", "x"))
         self.label_14.setText(_translate("Dialog", "y"))
+
         self.radioButton.setText(_translate("Dialog", "Use RSA"))
         self.radioButton_2.setText(_translate("Dialog", "Use Elgamal"))
+
         self.pushButton.setText(_translate("Dialog", "Encrypt"))
         self.pushButton_2.setText(_translate("Dialog", "Decrypt"))
-        self.pushButton_3.setText(_translate("Dialog", "Upload Input File"))
-        self.pushButton_4.setText(_translate("Dialog", "Upload Public Key File"))
-        self.pushButton_5.setText(_translate("Dialog", "Upload Private Key File"))
 
     def toggleRSA(self, value):
         self.withRSA = value
@@ -310,7 +333,12 @@ class mainApp(object):
         fileName = QtWidgets.QFileDialog.getOpenFileName()[0]
         self.textEdit_3.append(f">Reading input file '{fileName}'")
         inputData, is_cipherText = helper.readFromFile(fileName)
-        self.textEdit_3.append(">Reading file done")
+        self.textEdit_3.append(">Reading file done.")
+        if (is_cipherText):
+            self.textEdit.setText(inputData)
+            self.checkBox.setChecked(True)
+        else:
+            self.checkBox.setChecked(False)
         self.inputFileData = (inputData, is_cipherText)
     
     def openKeyFileNameDialog(self, keyType):
@@ -318,48 +346,51 @@ class mainApp(object):
         if (keyType == 0):
             self.textEdit_3.append(f">Reading public key file '{fileName}'")
             self.e, self.n = helper.readFromFile(fileName)
+            self.lineEdit_3.setText(str(self.e))
+            self.lineEdit_13.setText(str(self.n))
         else:
             self.textEdit_3.append(f">Reading private key file '{fileName}'")
             self.d, self.n = helper.readFromFile(fileName)
-        self.textEdit_3.append(">Reading file done")
+            self.lineEdit_12.setText(str(self.d))
+            self.lineEdit_13.setText(str(self.n))
+        self.textEdit_3.append(">Reading file done.")
 
     def RSA(self, p, q, e, d_, n_):
-        self.textEdit_3.append(">Creating public key")
-        if (p >= 503 and q >= 503):
-            if (n_):
-                n = n_
-            else:
-                n = p*q
-                
-            publicKey = f"{e},{n}"
-            self.textEdit_3.append(f">n = {n}")
-            self.textEdit_3.append(f">RSA public key = ({publicKey})")
-            helper.writeToFile(publicKey, 0)
-            
-            self.textEdit_3.append(">Creating private key")
-            if (d_):
-                d = d_
-            else:
-                toitent = (p-1)*(q-1)
-                
-                if (helper.is_coprime(toitent, e)):
-                    d = decimal.Decimal(0.1)
-                    k = 0
-                    while not d == d.to_integral_value():
-                        k += 1
-                        d = (decimal.Decimal(1) + decimal.Decimal(k)*decimal.Decimal(toitent)) / decimal.Decimal(e)
-                    d = d.to_integral_value()
-
-                    privateKey = f"{d},{n}"
-                    self.textEdit_3.append(f">d = {d}")
-                    self.textEdit_3.append(f">RSA private key = ({privateKey})")
-                    helper.writeToFile(privateKey, 1)
-
-                    return n
-                else:
-                    self.textEdit_3.append(">ERROR: Value of e must be coprime of toitent.")
+        self.textEdit_3.append(">Creating public key.")
+        if (n_):
+            n = n_
         else:
-            self.textEdit_3.append(">ERROR: Value of p or q too low. Result of p*q must be bigger than 255255.")
+            if (p >= 503 and q >= 503):
+                n = p*q
+            else:
+                raise RSAPrimesTooLow
+        publicKey = f"{e},{n}"
+        self.textEdit_3.append(f">n = {n}")
+        self.textEdit_3.append(f">RSA public key = ({publicKey})")
+        helper.writeToFile(publicKey, 0)
+        
+        self.textEdit_3.append(">Creating private key")
+        if (d_):
+            d = d_
+        else:
+            toitent = (p-1)*(q-1)
+            
+            if (helper.is_coprime(toitent, e)):
+                d = decimal.Decimal(0.1)
+                k = 0
+                while not d == d.to_integral_value():
+                    k += 1
+                    d = (decimal.Decimal(1) + decimal.Decimal(k)*decimal.Decimal(toitent)) / decimal.Decimal(e)
+                d = d.to_integral_value()
+
+                privateKey = f"{d},{n}"
+                self.textEdit_3.append(f">d = {d}")
+                self.textEdit_3.append(f">RSA private key = ({privateKey})")
+                helper.writeToFile(privateKey, 1)
+
+                return n
+            else:
+                raise RSAPublicKeyNotCoprime
 
     def handleSubmit(self, sender):
         mode = 0
@@ -369,13 +400,17 @@ class mainApp(object):
         try:
             if (self.inputFileData):
                 if (self.inputFileData[1]): #cipherText
-                    codedText = self.inputFileData[0]
+                    codedText = copy.copy(self.inputFileData[0])
+                    self.textEdit.setText(codedText)
                 else:
                     codedText = helper.codeMessage(self.inputFileData[0], 1)
                 self.inputFileData = None
             else:
                 inputText = self.textEdit.toPlainText()
-                codedText = helper.codeMessage(inputText, 0)
+                if (self.checkBox.isChecked()):
+                    codedText = inputText
+                else:
+                    codedText = helper.codeMessage(inputText, 0)
             
             if (not self.lineEdit_8.text() or not \
                 self.lineEdit_9.text() or not \
@@ -414,6 +449,14 @@ class mainApp(object):
                     if (self.lineEdit_13.text()):
                         n = int(self.lineEdit_13.text())
                         self.textEdit_3.append(f">n = {n}")
+
+                    if (self.d):
+                        d = copy.copy(self.d)
+                    self.d = None
+
+                    if (self.n):
+                        n = copy.copy(self.n)
+                    self.n = None
                     
                     if (sender == 0): #encrypt
                         self.textEdit_3.append(">Starting RSA")
@@ -429,32 +472,34 @@ class mainApp(object):
                         n = self.RSA(p, q, e, d, n)
                         data = (codedText, e, n)
                         self.encrypt(mode, data)
-                    else: #decrypt
-                        if (self.d):
-                            d = copy.copy(self.d)
-                        self.d = None
-                        
-                        if (self.n):
-                            n = copy.copy(self.n)
-                        self.n = None
-                        
+                    else: #decrypt   
+                        if (not self.lineEdit_15.text()):
+                            raise ParamNotFilled
                         if (d and n):
                             data = (codedText, d, n)
                             self.decrypt(mode, data)
                         else:
-                            self.textEdit_3.append(">ERROR: Private key is not inserted.")
+                            raise ParamNotFilled
                 else: #Elgamal
                     p = int(self.lineEdit_4.text())
                     g = int(self.lineEdit_5.text())
                     x = int(self.lineEdit_6.text())
                     k = int(self.lineEdit_7.text())
             else:
-                self.textEdit_3.append(">ERROR: Value of Diffie-Helman g must be smaller than n.")
+               raise DHBiggerG 
 
         except ParamNotFilled:
             self.textEdit_3.append(">ERROR: One or more required param is not filled.")
+        except DHBiggerG:
+            self.textEdit_3.append(">ERROR: Value of Diffie-Helman g must be smaller than n.")
         except RSAPrimesNotFilled:
             self.textEdit_3.append(">ERROR: Param p and q must be filled if n or d is not filled.")
+        except RSAPrimesTooLow:
+            self.textEdit_3.append(">ERROR: Value of p*q must be bigger than 255255")
+        except RSAPublicKeyNotCoprime:
+            self.textEdit_3.append(">ERROR: Value of e must be coprime of toitent.")
+        except FileNotFoundError:
+            pass
         # except ValueError:
         #     self.textEdit_3.append(">ERROR: Could not convert input to int")
         # except:
@@ -467,12 +512,11 @@ class mainApp(object):
             e = data[1]
             n = data[2]
             cipherText = ""
-            for i in range(math.ceil(len(codedText)/6)):
+            amount = math.ceil(len(codedText)/6)
+            # print(f"amount: {amount}")
+            for i in range(amount):
+                # print(f"{i/amount}%")
                 block = codedText[i*6:i*6+6]
-                # if (block[0:3] == "256"):
-                #     block = block[3:6]
-                # elif (block[3:6] == "256"):
-                #     block = block[0:3]
                 code = str(pow(int(block), e, n))
                 paddingLength = 6-len(code)
                 padding = '0' * paddingLength
@@ -495,7 +539,9 @@ class mainApp(object):
             n = data[2]
             
             plainCode = ""
-            for i in range(int(len(codedText)/6)):
+            amount = math.ceil(len(codedText)/6)
+            for i in range(amount):
+                # print(f"{i/amount}%")
                 block = codedText[i*6:i*6+6]
                 code = str(pow(int(block), d, n))
                 paddingLength = 6-len(code)
@@ -504,18 +550,27 @@ class mainApp(object):
                 plainCode += code
 
             plainText = ""
+            byteArray = []
             for i in range(int(len(plainCode)/3)):
                 block = plainCode[i*3:i*3+3]
                 code = int(block)
+                byteArray.append(code)
                 if (code > 0):
                     char = chr(code)
                     plainText += char
 
             self.textEdit_3.append(">Decryption done.")
             self.textEdit_2.setText(plainText)
+            self.saveDecryptResult(byteArray)
             self.textEdit_3.append("")
         else: #Elgamal
             print("Elgamal decrypt")
+    
+    def saveDecryptResult(self, byteArray):
+        fileName = self.lineEdit_15.text()
+        self.textEdit_3.append(f">Saving plaintext to {fileName}")
+        helper.writePlainText(byteArray, fileName)
+        self.textEdit_3.append(f">Plaintext saved to {fileName}")
 
 class Error(Exception):
     #Base class for other exceptions
@@ -525,8 +580,20 @@ class ParamNotFilled(Error):
     #When a param is not filled
     pass
 
+class DHBiggerG(Error):
+    #When g is bigger than n
+    pass
+
 class RSAPrimesNotFilled(Error):
     #Param p or q is not filled when n is not filled
+    pass
+
+class RSAPrimesTooLow(Error):
+    #Value of p*q is less than 255255
+    pass
+
+class RSAPublicKeyNotCoprime(Error):
+    #Value of e is not coprime of toitent
     pass
 
 if __name__ == "__main__":

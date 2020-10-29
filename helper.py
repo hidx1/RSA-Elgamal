@@ -1,6 +1,5 @@
 import os
 
-
 def egcd(a, b):
     if a == 0:
         return (b, 0, 1)
@@ -26,6 +25,12 @@ def writeToFile(data, mode):
         f = open("cipherText.ecr", "w")
 
     f.write(data)
+    f.close()
+
+def writePlainText(byteArray, file_name):
+    result = bytes(byteArray)
+    f = open(file_name, "wb")
+    f.write(result)
     f.close()
 
 
