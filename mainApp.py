@@ -477,18 +477,24 @@ class mainApp(object):
 
     def generateRandomPrime(self, fieldID):
         prime = number.getPrime(512)
-        if (fieldID == 0):
+        if (fieldID == 0): #RSA p value
             self.lineEdit.setText(str(prime))
-        elif (fieldID == 1):
+        elif (fieldID == 1): #RSA q value
             self.lineEdit_2.setText(str(prime))
-        elif (fieldID == 3):
+        elif (fieldID == 3): #ElGamal p value
             self.lineEdit_4.setText(str(prime))
-        elif (fieldID == 7):
+        elif (fieldID == 7): #Diffie-Helman n value
             self.lineEdit_8.setText(str(prime))
-        elif (fieldID == 8):
-            self.lineEdit_9.setText(str(prime))
+        elif (fieldID == 8): #Diffie-Helman g value
+            if (self.lineEdit_8.text()):
+                n = int(self.lineEdit_8.text())
+                while prime >= n:
+                    prime = number.getPrime(512)
+                self.lineEdit_9.setText(str(prime))
+            else:
+                self.textEdit_3.append(f">Diffie-Helman n must be filled before generating g value")
 
-    def generateCoprime(self, fieldID):
+    def generateCoprime(self, fieldID): #RSA e value
         try:
             p = None
             q = None
@@ -508,15 +514,33 @@ class mainApp(object):
 
     def generateRandomNumber(self, fieldID):
         randNum = number.getRandomInteger(512)
-        if (fieldID == 4):
-            self.lineEdit_5.setText(str(randNum))
-        elif (fieldID == 5):
-            self.lineEdit_6.setText(str(randNum))
-        elif (fieldID == 6):
-            self.lineEdit_7.setText(str(randNum))
-        elif (fieldID == 9):
+        if (fieldID == 4): #ElGamal g value
+            if (self.lineEdit_4.text()):
+                p = int(self.lineEdit_4.text())
+                while randNum >= p:
+                    randNum = number.getRandomInteger(512)
+                self.lineEdit_5.setText(str(randNum))
+            else:
+                self.textEdit_3.append(f">ElGamal p must must be filled before generating g value")
+        elif (fieldID == 5): #ElGamal x value
+            if (self.lineEdit_4.text()):
+                p = int(self.lineEdit_4.text())
+                while not (1 <= randNum and randNum <= (p-2)):
+                    randNum = number.getRandomInteger(512)
+                self.lineEdit_6.setText(str(randNum))
+            else:
+                self.textEdit_3.append(f">ElGamal p must must be filled before generating g value")
+        elif (fieldID == 6): #ElGamal k value
+            if (self.lineEdit_4.text()):
+                p = int(self.lineEdit_4.text())
+                while not (1 <= randNum and randNum <= (p-2)):
+                    randNum = number.getRandomInteger(512)
+                self.lineEdit_7.setText(str(randNum))
+            else:
+                self.textEdit_3.append(f">ElGamal p must must be filled before generating g value")
+        elif (fieldID == 9): #Diffie-Helman x value
             self.lineEdit_10.setText(str(randNum))
-        elif (fieldID == 10):
+        elif (fieldID == 10): #Diffie-Helman y value
             self.lineEdit_11.setText(str(randNum))
 
     def RSA(self, p, q, e, d_, n_):
@@ -848,7 +872,7 @@ class mainApp(object):
             nLength = len(str(n))
 
             plainCode = ""
-            cleanDiv = len(codedText) / nLength == 0
+            cleanDiv = len(codedText) % nLength == 0
             amount = math.ceil(len(codedText) / nLength)
             for i in range(amount):
                 # print(f"Decrypting phase 1: {(i+1)/amount}")
