@@ -32,7 +32,10 @@ def readFromFile(file_name):
         f = open(file_name, "r")
         data = f.read()
         splitted = data.split(",")
-        return int(splitted[0]), int(splitted[1])
+        if (len(splitted) == 2):
+            return int(splitted[0]), int(splitted[1])
+        elif (len(splitted) == 3):
+            return int(splitted[0]), int(splitted[1]), int(splitted[2])
     else:
         f = open(file_name, "rb")
         data = []

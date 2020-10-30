@@ -17,6 +17,10 @@ class mainApp(object):
         self.e = None
         self.d = None
         self.n = None
+        self.y = None
+        self.g = None
+        self.p = None
+        self.x = None
         # self.onlyInt = QtGui.QIntValidator()
         self.label = QtWidgets.QLabel(Dialog)
         self.label.setGeometry(QtCore.QRect(20, 20, 61, 16))
@@ -442,19 +446,34 @@ class mainApp(object):
     def openKeyFileNameDialog(self, keyType):
         try:
             fileName = QtWidgets.QFileDialog.getOpenFileName()[0]
-            if (keyType == 0):
-                self.textEdit_3.append(f">Reading public key file '{fileName}'")
-                self.e, self.n = helper.readFromFile(fileName)
-                self.lineEdit_3.setText(str(self.e))
-                self.lineEdit_13.setText(str(self.n))
-            else:
-                self.textEdit_3.append(f">Reading private key file '{fileName}'")
-                self.d, self.n = helper.readFromFile(fileName)
-                self.lineEdit_12.setText(str(self.d))
-                self.lineEdit_13.setText(str(self.n))
+            if (keyType == 0): #Public key file
+                if (self.withRSA): #Public RSA key
+                    self.textEdit_3.append(f">Reading RSA public key file '{fileName}'")
+                    self.e, self.n = helper.readFromFile(fileName)
+                    self.lineEdit_3.setText(str(self.e))
+                    self.lineEdit_13.setText(str(self.n))
+                else: #Public ElGamal key
+                    self.textEdit_3.append(f">Reading ElGamal public key file '{fileName}'")
+                    self.y, self.g, self.p = helper.readFromFile(fileName)
+                    self.lineEdit_14.setText(str(self.y))
+                    self.lineEdit_5.setText(str(self.g))
+                    self.lineEdit_4.setText(str(self.p))
+            else: #Private key file
+                if (self.withRSA): #Private RSA key
+                    self.textEdit_3.append(f">Reading RSA private key file '{fileName}'")
+                    self.d, self.n = helper.readFromFile(fileName)
+                    self.lineEdit_12.setText(str(self.d))
+                    self.lineEdit_13.setText(str(self.n))
+                else: #Private ElGamal key
+                    self.textEdit_3.append(f">Reading ElGamal private key file '{fileName}'")
+                    self.x, self.p = helper.readFromFile(fileName)
+                    self.lineEdit_6.setText(str(self.x))
+                    self.lineEdit_4.setText(str(self.p))
             self.textEdit_3.append(">Reading file done.")
         except FileNotFoundError:
             pass
+        except ValueError:
+            self.textEdit_3.append(">ERROR: Input is not int")
 
     def generateRandomPrime(self, fieldID):
         prime = number.getPrime(512)
@@ -514,7 +533,7 @@ class mainApp(object):
         self.textEdit_3.append(f">RSA public key = ({publicKey})")
         helper.writeToFile(publicKey, 0)
 
-        self.textEdit_3.append(">Creating private key")
+        self.textEdit_3.append(">Creating private key.")
         if (d_):
             d = d_
         else:
@@ -539,7 +558,7 @@ class mainApp(object):
                 raise RSAPublicKeyNotCoprime
 
     def elgamal(self, p, g, x, y_):
-        self.textEdit_3.append(">Creating public key")
+        self.textEdit_3.append(">Creating public key.")
         if (y_):
             y = y_
         else:
@@ -548,7 +567,7 @@ class mainApp(object):
         self.textEdit_3.append(f">y = {y}")
         self.textEdit_3.append(f">ElGamal public key = ({publicKey})")
         helper.writeToFile(publicKey, 0)
-        self.textEdit_3.append(">Creating private key")
+        self.textEdit_3.append(">Creating private key.")
         privateKey = f"{x},{p}"
         self.textEdit_3.append(f">ElGamal private key = ({privateKey})")
         helper.writeToFile(privateKey, 1)
@@ -590,6 +609,10 @@ class mainApp(object):
                 self.textEdit_3.append(">Generating session key.")
                 sessionKey = helper.diffie_helman(dh_n, dh_g, dh_x, dh_y)
                 self.textEdit_3.append(f">Session key = {sessionKey}")
+
+                ################################################
+                ##                     RSA                    ##
+                ################################################
 
                 if (mode == 0):  # RSA
                     p = None
@@ -653,7 +676,12 @@ class mainApp(object):
                             self.textEdit_3.append("")
                         else:
                             raise ParamNotFilled
-                else:  # Elgamal
+
+                ################################################
+                ##                    ElGamal                 ##
+                ################################################
+
+                else:  # ElGamal
                     p = None
                     g = None
                     x = None
@@ -674,9 +702,23 @@ class mainApp(object):
                     if (self.lineEdit_14.text()):
                         y = int(self.lineEdit_14.text())
                         self.textEdit_3.append(f">y = {y}")
-                    # if (self.y):
-                    #     y = copy.copy(self.y)
-                    # self.y = None
+
+                    if (self.y):
+                        y = copy.copy(self.y)
+                    self.y = None
+
+                    if (self.g):
+                        g = copy.copy(self.g)
+                    self.g = None
+
+                    if (self.p):
+                        p = copy.copy(self.p)
+                    self.p = None
+
+                    if (self.x):
+                        x = copy.copy(self.x)
+                    self.x = None
+
                     if (sender == 0):  # encrypt
                         self.textEdit_3.append(">Starting ElGamal")
                         if (not k):
@@ -722,6 +764,10 @@ class mainApp(object):
         #     self.textEdit_3.append(">ERROR: Unhandled error case occured")
 
     def encrypt(self, mode, data):
+        ################################################
+        ##                     RSA                    ##
+        ################################################
+
         if (mode == 0):
             self.textEdit_3.append(">Starting RSA encryption")
             codedText = data[0]
@@ -749,6 +795,11 @@ class mainApp(object):
             self.textEdit_3.append(">Ciphertext saved to cipherText.ecr")
             self.textEdit_3.append("")
             self.textEdit_3.append(f">Ciphertext file size = {len(cipherText)} bytes.")
+
+        ################################################
+        ##                    ElGamal                 ##
+        ################################################
+
         else:
             self.textEdit_3.append(">Starting ElGamal encryption")
             codedText = data[0]
@@ -785,6 +836,10 @@ class mainApp(object):
             self.textEdit_3.append(f">Ciphertext file size = {len(cipherText)} bytes.")
 
     def decrypt(self, mode, data):
+        ################################################
+        ##                     RSA                    ##
+        ################################################
+
         if (mode == 0):  # RSA
             self.textEdit_3.append(">Starting decryption.")
             codedText = data[0]
@@ -829,6 +884,11 @@ class mainApp(object):
             self.textEdit_3.append(f">Plaintext saved to {fileName}")
             self.textEdit_3.append("")
             self.textEdit_3.append(f">Plaintext file size = {len(plainText)} bytes.")
+        
+        ################################################
+        ##                    ElGamal                 ##
+        ################################################
+
         else:  # Elgamal
             self.textEdit_3.append(">Starting decryption.")
             codedText = data[0]
