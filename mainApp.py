@@ -446,25 +446,25 @@ class mainApp(object):
     def openKeyFileNameDialog(self, keyType):
         try:
             fileName = QtWidgets.QFileDialog.getOpenFileName()[0]
-            if (keyType == 0): #Public key file
-                if (self.withRSA): #Public RSA key
+            if (keyType == 0):  # Public key file
+                if (self.withRSA):  # Public RSA key
                     self.textEdit_3.append(f">Reading RSA public key file '{fileName}'")
                     self.e, self.n = helper.readFromFile(fileName)
                     self.lineEdit_3.setText(str(self.e))
                     self.lineEdit_13.setText(str(self.n))
-                else: #Public ElGamal key
+                else:  # Public ElGamal key
                     self.textEdit_3.append(f">Reading ElGamal public key file '{fileName}'")
                     self.y, self.g, self.p = helper.readFromFile(fileName)
                     self.lineEdit_14.setText(str(self.y))
                     self.lineEdit_5.setText(str(self.g))
                     self.lineEdit_4.setText(str(self.p))
-            else: #Private key file
-                if (self.withRSA): #Private RSA key
+            else:  # Private key file
+                if (self.withRSA):  # Private RSA key
                     self.textEdit_3.append(f">Reading RSA private key file '{fileName}'")
                     self.d, self.n = helper.readFromFile(fileName)
                     self.lineEdit_12.setText(str(self.d))
                     self.lineEdit_13.setText(str(self.n))
-                else: #Private ElGamal key
+                else:  # Private ElGamal key
                     self.textEdit_3.append(f">Reading ElGamal private key file '{fileName}'")
                     self.x, self.p = helper.readFromFile(fileName)
                     self.lineEdit_6.setText(str(self.x))
@@ -477,15 +477,15 @@ class mainApp(object):
 
     def generateRandomPrime(self, fieldID):
         prime = number.getPrime(512)
-        if (fieldID == 0): #RSA p value
+        if (fieldID == 0):  # RSA p value
             self.lineEdit.setText(str(prime))
-        elif (fieldID == 1): #RSA q value
+        elif (fieldID == 1):  # RSA q value
             self.lineEdit_2.setText(str(prime))
-        elif (fieldID == 3): #ElGamal p value
+        elif (fieldID == 3):  # ElGamal p value
             self.lineEdit_4.setText(str(prime))
-        elif (fieldID == 7): #Diffie-Helman n value
+        elif (fieldID == 7):  # Diffie-Helman n value
             self.lineEdit_8.setText(str(prime))
-        elif (fieldID == 8): #Diffie-Helman g value
+        elif (fieldID == 8):  # Diffie-Helman g value
             if (self.lineEdit_8.text()):
                 n = int(self.lineEdit_8.text())
                 while prime >= n:
@@ -494,7 +494,7 @@ class mainApp(object):
             else:
                 self.textEdit_3.append(f">Diffie-Helman n must be filled before generating g value")
 
-    def generateCoprime(self, fieldID): #RSA e value
+    def generateCoprime(self, fieldID):  # RSA e value
         try:
             p = None
             q = None
@@ -514,7 +514,7 @@ class mainApp(object):
 
     def generateRandomNumber(self, fieldID):
         randNum = number.getRandomInteger(512)
-        if (fieldID == 4): #ElGamal g value
+        if (fieldID == 4):  # ElGamal g value
             if (self.lineEdit_4.text()):
                 p = int(self.lineEdit_4.text())
                 while randNum >= p:
@@ -522,25 +522,25 @@ class mainApp(object):
                 self.lineEdit_5.setText(str(randNum))
             else:
                 self.textEdit_3.append(f">ElGamal p must must be filled before generating g value")
-        elif (fieldID == 5): #ElGamal x value
+        elif (fieldID == 5):  # ElGamal x value
             if (self.lineEdit_4.text()):
                 p = int(self.lineEdit_4.text())
-                while not (1 <= randNum and randNum <= (p-2)):
+                while not (1 <= randNum and randNum <= (p - 2)):
                     randNum = number.getRandomInteger(512)
                 self.lineEdit_6.setText(str(randNum))
             else:
                 self.textEdit_3.append(f">ElGamal p must must be filled before generating g value")
-        elif (fieldID == 6): #ElGamal k value
+        elif (fieldID == 6):  # ElGamal k value
             if (self.lineEdit_4.text()):
                 p = int(self.lineEdit_4.text())
-                while not (1 <= randNum and randNum <= (p-2)):
+                while not (1 <= randNum and randNum <= (p - 2)):
                     randNum = number.getRandomInteger(512)
                 self.lineEdit_7.setText(str(randNum))
             else:
                 self.textEdit_3.append(f">ElGamal p must must be filled before generating g value")
-        elif (fieldID == 9): #Diffie-Helman x value
+        elif (fieldID == 9):  # Diffie-Helman x value
             self.lineEdit_10.setText(str(randNum))
-        elif (fieldID == 10): #Diffie-Helman y value
+        elif (fieldID == 10):  # Diffie-Helman y value
             self.lineEdit_11.setText(str(randNum))
 
     def RSA(self, p, q, e, d_, n_):
@@ -750,6 +750,14 @@ class mainApp(object):
                         if (not y):
                             if (not p or not g or not x or not k):
                                 raise ParamNotFilled
+                            if ((x < 1) or (x >= (p - 2))):
+                                raise ElGamalInvalidX
+                            if ((k < 1) or (k >= (p - 2))):
+                                raise ElGamalInvalidK
+                        if (g >= p):
+                            raise ElGamalBiggerG
+                        if (p <= 255255):
+                            raise ElGamalPrimeTooLow
 
                         y = self.elgamal(p, g, x, y)
                         data = (codedText, p, g, k, y)
@@ -760,8 +768,14 @@ class mainApp(object):
                         self.textEdit_3.append(f">Encryption time: {elapsedTime} sec")
                         self.textEdit_3.append("")
                     else:  # decrypt
+                        if (not self.lineEdit_15.text()):
+                            raise ParamNotFilled
                         if (not p or not x):
                             raise ParamNotFilled
+                        if (p <= 255255):
+                            raise ElGamalPrimeTooLow
+                        if ((x < 1) or (x >= (p - 2))):
+                            raise ElGamalInvalidX
                         data = (codedText, p, x)
                         startTime = time.time()
                         self.decrypt(mode, data)
@@ -776,10 +790,18 @@ class mainApp(object):
             self.textEdit_3.append(">ERROR: One or more required param is not filled.")
         except DHBiggerG:
             self.textEdit_3.append(">ERROR: Value of Diffie-Helman g must be smaller than n.")
+        except ElGamalBiggerG:
+            self.textEdit_3.append(">ERROR: Value of g must be smaller than p.")
+        except ElGamalInvalidX:
+            self.textEdit_3.append(">ERROR: Value of x must between 1 < x < p-2.")
+        except ElGamalInvalidK:
+            self.textEdit_3.append(">ERROR: Value of k must between 1 < k < p-2.")
         except RSAPrimesNotFilled:
             self.textEdit_3.append(">ERROR: Param p and q must be filled if n or d is not filled.")
         except RSAPrimesTooLow:
             self.textEdit_3.append(">ERROR: Value of p*q must be bigger than 255255")
+        except ElGamalPrimeTooLow:
+            self.textEdit_3.append(">ERROR: Value of p must be bigger than 255255")
         except RSAPublicKeyNotCoprime:
             self.textEdit_3.append(">ERROR: Value of e must be coprime of toitent.")
         # except ValueError:
@@ -908,7 +930,7 @@ class mainApp(object):
             self.textEdit_3.append(f">Plaintext saved to {fileName}")
             self.textEdit_3.append("")
             self.textEdit_3.append(f">Plaintext file size = {len(plainText)} bytes.")
-        
+
         ################################################
         ##                    ElGamal                 ##
         ################################################
@@ -974,6 +996,21 @@ class DHBiggerG(Error):
     pass
 
 
+class ElGamalBiggerG(Error):
+    # When g is bigger than p
+    pass
+
+
+class ElGamalInvalidX(Error):
+    # When x is bigger than p-2 or less than 1
+    pass
+
+
+class ElGamalInvalidK(Error):
+    # When k is bigger than p-2 or less than 1
+    pass
+
+
 class RSAPrimesNotFilled(Error):
     # Param p or q is not filled when n is not filled
     pass
@@ -981,6 +1018,11 @@ class RSAPrimesNotFilled(Error):
 
 class RSAPrimesTooLow(Error):
     # Value of p*q is less than 255255
+    pass
+
+
+class ElGamalPrimeTooLow(Error):
+    # Value of p is less than 255255
     pass
 
 
