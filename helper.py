@@ -1,6 +1,5 @@
 import os
 
-
 def writeToFile(data, mode):
     if (mode == 0):  # write public key file
         f = open("public.pub", "w")

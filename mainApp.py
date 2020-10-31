@@ -7,7 +7,6 @@ import copy
 import time
 from Crypto.Util import number
 
-
 class mainApp(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
@@ -73,7 +72,7 @@ class mainApp(object):
         self.radioButton.setChecked(True)
         self.radioButton.toggled.connect(self.toggleRSA)
 
-        # Use Elgamal radio button
+        # Use ElGamal radio button
         self.radioButton_2 = QtWidgets.QRadioButton(Dialog)
         self.radioButton_2.setGeometry(QtCore.QRect(530, 40, 95, 20))
         self.radioButton_2.setObjectName("radioButton_2")
@@ -158,7 +157,7 @@ class mainApp(object):
         self.label_7.setObjectName("label_7")
         self.formLayout_2.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.label_7)
 
-        # Elgamal p value
+        # ElGamal p value
         self.lineEdit_4 = QtWidgets.QLineEdit(self.formLayoutWidget_2)
         self.lineEdit_4.setObjectName("lineEdit_4")
         # self.lineEdit_4.setValidator(self.onlyInt)
@@ -169,7 +168,7 @@ class mainApp(object):
         self.label_8.setObjectName("label_8")
         self.formLayout_2.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.label_8)
 
-        # Elgamal g value
+        # ElGamal g value
         self.lineEdit_5 = QtWidgets.QLineEdit(self.formLayoutWidget_2)
         self.lineEdit_5.setObjectName("lineEdit_5")
         # self.lineEdit_5.setValidator(self.onlyInt)
@@ -180,7 +179,7 @@ class mainApp(object):
         self.label_9.setObjectName("label_9")
         self.formLayout_2.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.label_9)
 
-        # Elgamal x value
+        # ElGamal x value
         self.lineEdit_6 = QtWidgets.QLineEdit(self.formLayoutWidget_2)
         self.lineEdit_6.setObjectName("lineEdit_6")
         # self.lineEdit_6.setValidator(self.onlyInt)
@@ -191,7 +190,7 @@ class mainApp(object):
         self.label_10.setObjectName("label_10")
         self.formLayout_2.setWidget(3, QtWidgets.QFormLayout.LabelRole, self.label_10)
 
-        # Elgamal k value
+        # ElGamal k value
         self.lineEdit_7 = QtWidgets.QLineEdit(self.formLayoutWidget_2)
         self.lineEdit_7.setObjectName("lineEdit_7")
         # self.lineEdit_7.setValidator(self.onlyInt)
@@ -202,35 +201,35 @@ class mainApp(object):
         self.label_17.setObjectName("label_17")
         self.formLayout_2.setWidget(4, QtWidgets.QFormLayout.LabelRole, self.label_17)
 
-        # Elgamal y value
+        # ElGamal y value
         self.lineEdit_14 = QtWidgets.QLineEdit(self.formLayoutWidget_2)
         self.lineEdit_14.setObjectName("lineEdit_14")
         self.lineEdit_14.setReadOnly(True)
 
         self.formLayout_2.setWidget(4, QtWidgets.QFormLayout.FieldRole, self.lineEdit_14)
 
-        # Elgamal generate p value
+        # ElGamal generate p value
         self.pushButton_9 = QtWidgets.QPushButton(self.groupBox_2)
         self.pushButton_9.setGeometry(QtCore.QRect(150, 28, 71, 25))
         self.pushButton_9.setMinimumSize(QtCore.QSize(0, 0))
         self.pushButton_9.setObjectName("pushButton_9")
         self.pushButton_9.clicked.connect(lambda: self.generateRandomPrime(3))
 
-        # Elgamal generate g value
+        # ElGamal generate g value
         self.pushButton_10 = QtWidgets.QPushButton(self.groupBox_2)
         self.pushButton_10.setGeometry(QtCore.QRect(150, 58, 71, 25))
         self.pushButton_10.setMinimumSize(QtCore.QSize(0, 0))
         self.pushButton_10.setObjectName("pushButton_10")
         self.pushButton_10.clicked.connect(lambda: self.generateRandomNumber(4))
 
-        # Elgamal generate x value
+        # ElGamal generate x value
         self.pushButton_11 = QtWidgets.QPushButton(self.groupBox_2)
         self.pushButton_11.setGeometry(QtCore.QRect(150, 88, 71, 25))
         self.pushButton_11.setMinimumSize(QtCore.QSize(0, 0))
         self.pushButton_11.setObjectName("pushButton_11")
         self.pushButton_11.clicked.connect(lambda: self.generateRandomNumber(5))
 
-        # Elgamal generate k value
+        # ElGamal generate k value
         self.pushButton_12 = QtWidgets.QPushButton(self.groupBox_2)
         self.pushButton_12.setGeometry(QtCore.QRect(150, 117, 71, 25))
         self.pushButton_12.setMinimumSize(QtCore.QSize(0, 0))
