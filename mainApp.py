@@ -7,6 +7,7 @@ import copy
 import time
 from Crypto.Util import number
 
+
 class mainApp(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
@@ -855,17 +856,18 @@ class mainApp(object):
             cipherText = ""
             cipherText_a = ""
             cipherText_b = ""
+            pLength = len(str(p))
             amount = math.ceil(len(codedText) / 6)
             for i in range(amount):
                 block = codedText[i * 6:i * 6 + 6]
                 code = str(pow(g, k, p))
-                paddingLength = 6 - len(code)
+                paddingLength = pLength - len(code)
                 padding = '0' * paddingLength
                 code = padding + code
                 cipherText_a += code
                 temp_int = pow(y, k, p)
                 code = str((int(block) * temp_int) % p)
-                paddingLength = 6 - len(code)
+                paddingLength = pLength - len(code)
                 padding = '0' * paddingLength
                 code = padding + code
                 cipherText_b += code
@@ -945,10 +947,11 @@ class mainApp(object):
             codedLength = int(len(codedText) / 2)
             codedText_a = codedText[:codedLength]
             codedText_b = codedText[codedLength:]
-            amount = math.ceil(codedLength / 6)
+            pLength = len(str(p))
+            amount = math.ceil(codedLength / pLength)
             for i in range(amount):
-                block_a = int(codedText_a[i * 6:i * 6 + 6])
-                block_b = int(codedText_b[i * 6:i * 6 + 6])
+                block_a = int(codedText_a[i * pLength:i * pLength + pLength])
+                block_b = int(codedText_b[i * pLength:i * pLength + pLength])
                 temp = pow(block_a, p - 1 - x, p)
                 code = str((block_b * temp) % p)
                 paddingLength = 6 - len(code)
@@ -961,12 +964,9 @@ class mainApp(object):
             for i in range(charAmount):
                 block = plainCode[i * 3:i * 3 + 3]
                 code = int(block)
-                if (i == charAmount - 2):
-                    pass
-                else:
-                    byteArray.append(code)
-                    char = chr(code)
-                    plainText += char
+                byteArray.append(code)
+                char = chr(code)
+                plainText += char
 
             self.textEdit_3.append(">Decryption done.")
             print("Set plaintext")
