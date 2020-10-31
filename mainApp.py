@@ -864,7 +864,8 @@ class mainApp(object):
                 padding = '0' * paddingLength
                 code = padding + code
                 cipherText_a += code
-                code = str((int(block) * pow(y, k)) % p)
+                temp_int = pow(y, k, p)
+                code = str((int(block) * temp_int) % p)
                 paddingLength = 6 - len(code)
                 padding = '0' * paddingLength
                 code = padding + code
