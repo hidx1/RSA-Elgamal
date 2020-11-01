@@ -48,6 +48,6 @@ Made by:
     2. Input the result filename
 
 #### Screenshots
-![GUI image](Screenshots/GUI.png)
-![Encrypt](Screenshots/Encrypt.png)
-![Decrypt](Screenshots/Decrypt.png)
+![GUI image](Screenshots/GUI.PNG)
+![Encrypt](Screenshots/Encrypt.PNG)
+![Decrypt](Screenshots/Decrypt.PNG)
