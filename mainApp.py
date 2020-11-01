@@ -7,7 +7,6 @@ import copy
 import time
 from Crypto.Util import number
 
-
 class mainApp(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
@@ -436,6 +435,8 @@ class mainApp(object):
             if (is_cipherText):
                 if (len(inputData) < 16000):
                     self.textEdit.setText(inputData)
+                else:
+                    self.textEdit.setText("")
                 self.checkBox.setChecked(True)
             else:
                 self.checkBox.setChecked(False)
@@ -804,10 +805,8 @@ class mainApp(object):
             self.textEdit_3.append(">ERROR: Value of p must be bigger than 255255")
         except RSAPublicKeyNotCoprime:
             self.textEdit_3.append(">ERROR: Value of e must be coprime of toitent.")
-        # except ValueError:
-        #     self.textEdit_3.append(">ERROR: Could not convert input to int")
-        # except:
-        #     self.textEdit_3.append(">ERROR: Unhandled error case occured")
+        except:
+            self.textEdit_3.append(">ERROR: Unhandled error case occured")
 
     def encrypt(self, mode, data):
         ################################################
@@ -820,8 +819,9 @@ class mainApp(object):
             e = data[1]
             n = data[2]
             cipherText = ""
-            amount = math.ceil(len(codedText) / 6)
             nLength = len(str(n))
+            cleanDiv = len(codedText) % nLength == 0
+            amount = math.ceil(len(codedText) / 6)
             # print(f"amount: {amount}")
             for i in range(amount):
                 # print(f"Encrypting: {(i+1)/amount}")
@@ -831,11 +831,16 @@ class mainApp(object):
                 padding = '0' * paddingLength
                 code = padding + code
                 cipherText += code
+            if (not cleanDiv):
+                randomPaddingNumber = str(number.getRandomRange(100,999))
+                cipherText = randomPaddingNumber + cipherText
             self.textEdit_3.append(">RSA encryption finished")
             self.textEdit_3.append(">Writing ciphertext to cipherText.ecr")
             print("Set ciphertext")
             if (len(cipherText) < 16000):
                 self.textEdit_2.setText(cipherText)
+            else:
+                self.textEdit_2.setText("")
             print("Writing ciphertext to file")
             helper.writeToFile(cipherText, 2)
             self.textEdit_3.append(">Ciphertext saved to cipherText.ecr")
@@ -857,6 +862,7 @@ class mainApp(object):
             cipherText_a = ""
             cipherText_b = ""
             pLength = len(str(p))
+            cleanDiv = len(codedText) % pLength == 0
             amount = math.ceil(len(codedText) / 6)
             for i in range(amount):
                 block = codedText[i * 6:i * 6 + 6]
@@ -872,11 +878,16 @@ class mainApp(object):
                 code = padding + code
                 cipherText_b += code
                 cipherText = cipherText_a + cipherText_b
+            if (not cleanDiv):
+                randomPaddingNumber = str(number.getRandomRange(100,999))
+                cipherText = randomPaddingNumber + cipherText
             self.textEdit_3.append(">ElGamal encryption finished")
             self.textEdit_3.append(">Writing ciphertext to cipherText.ecr")
             print("Set ciphertext")
             if (len(cipherText) < 16000):
                 self.textEdit_2.setText(cipherText)
+            else:
+                self.textEdit_2.setText("")
             print("Writing ciphertext to file")
             helper.writeToFile(cipherText, 2)
             self.textEdit_3.append(">Ciphertext saved to cipherText.ecr")
@@ -897,6 +908,8 @@ class mainApp(object):
 
             plainCode = ""
             cleanDiv = len(codedText) % nLength == 0
+            if (not cleanDiv):
+                codedText = codedText[3:] 
             amount = math.ceil(len(codedText) / nLength)
             for i in range(amount):
                 # print(f"Decrypting phase 1: {(i+1)/amount}")
@@ -914,7 +927,7 @@ class mainApp(object):
                 # print(f"Decrypting phase 2: {(i+1)/charAmount}")
                 block = plainCode[i * 3:i * 3 + 3]
                 code = int(block)
-                if (not cleanDiv and i == charAmount - 2):
+                if (not cleanDiv and i == charAmount - 2 and code == 0):
                     pass
                 else:
                     byteArray.append(code)
@@ -925,6 +938,8 @@ class mainApp(object):
             print("Set plaintext")
             if (len(plainText) < 16000):
                 self.textEdit_2.setText(plainText)
+            else:
+                self.textEdit_2.setText("")
             print("Writing plaintext to file")
 
             fileName = self.lineEdit_15.text()
@@ -942,12 +957,15 @@ class mainApp(object):
             codedText = data[0]
             p = data[1]
             x = data[2]
+            pLength = len(str(p))
 
             plainCode = ""
+            cleanDiv = len(codedText) % pLength == 0
+            if (not cleanDiv):
+                codedText = codedText[3:]
             codedLength = int(len(codedText) / 2)
             codedText_a = codedText[:codedLength]
             codedText_b = codedText[codedLength:]
-            pLength = len(str(p))
             amount = math.ceil(codedLength / pLength)
             for i in range(amount):
                 block_a = int(codedText_a[i * pLength:i * pLength + pLength])
@@ -962,16 +980,21 @@ class mainApp(object):
             byteArray = []
             charAmount = int(len(plainCode) / 3)
             for i in range(charAmount):
-                block = plainCode[i * 3:i * 3 + 3]
+                block = plainCode[i * 3:i * 3 + 3]    
                 code = int(block)
-                byteArray.append(code)
-                char = chr(code)
-                plainText += char
+                if (not cleanDiv and i == charAmount - 2 and code == 0):
+                    pass
+                else:
+                    byteArray.append(code)
+                    char = chr(code)
+                    plainText += char
 
             self.textEdit_3.append(">Decryption done.")
             print("Set plaintext")
             if (len(plainText) < 16000):
                 self.textEdit_2.setText(plainText)
+            else:
+                self.textEdit_2.setText("")
             print("Writing plaintext to file")
 
             fileName = self.lineEdit_15.text()
