@@ -1,17 +1,16 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import sys
 import helper
-# import decimal
 import math
 import copy
 import time
 from Crypto.Util import number
 
+
 class mainApp(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
         Dialog.resize(758, 691)
-        # decimal.getcontext().prec = 100
         self.inputFileData = None
         self.e = None
         self.d = None
@@ -20,7 +19,6 @@ class mainApp(object):
         self.g = None
         self.p = None
         self.x = None
-        # self.onlyInt = QtGui.QIntValidator()
         self.label = QtWidgets.QLabel(Dialog)
         self.label.setGeometry(QtCore.QRect(20, 20, 61, 16))
         self.label.setObjectName("label")
@@ -81,7 +79,6 @@ class mainApp(object):
         # RSA p value
         self.lineEdit = QtWidgets.QLineEdit(self.formLayoutWidget)
         self.lineEdit.setObjectName("lineEdit")
-        # self.lineEdit.setValidator(self.onlyInt)
 
         self.formLayout.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.lineEdit)
         self.label_5 = QtWidgets.QLabel(self.formLayoutWidget)
@@ -91,7 +88,6 @@ class mainApp(object):
         # RSA q value
         self.lineEdit_2 = QtWidgets.QLineEdit(self.formLayoutWidget)
         self.lineEdit_2.setObjectName("lineEdit_2")
-        # self.lineEdit_2.setValidator(self.onlyInt)
 
         self.formLayout.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.lineEdit_2)
         self.label_6 = QtWidgets.QLabel(self.formLayoutWidget)
@@ -101,7 +97,6 @@ class mainApp(object):
         # RSA e value
         self.lineEdit_3 = QtWidgets.QLineEdit(self.formLayoutWidget)
         self.lineEdit_3.setObjectName("lineEdit_3")
-        # self.lineEdit_3.setValidator(self.onlyInt)
 
         self.formLayout.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.lineEdit_3)
         self.label_15 = QtWidgets.QLabel(self.formLayoutWidget)
@@ -160,7 +155,6 @@ class mainApp(object):
         # ElGamal p value
         self.lineEdit_4 = QtWidgets.QLineEdit(self.formLayoutWidget_2)
         self.lineEdit_4.setObjectName("lineEdit_4")
-        # self.lineEdit_4.setValidator(self.onlyInt)
         self.lineEdit_4.setReadOnly(True)
 
         self.formLayout_2.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.lineEdit_4)
@@ -171,7 +165,6 @@ class mainApp(object):
         # ElGamal g value
         self.lineEdit_5 = QtWidgets.QLineEdit(self.formLayoutWidget_2)
         self.lineEdit_5.setObjectName("lineEdit_5")
-        # self.lineEdit_5.setValidator(self.onlyInt)
         self.lineEdit_5.setReadOnly(True)
 
         self.formLayout_2.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.lineEdit_5)
@@ -182,7 +175,6 @@ class mainApp(object):
         # ElGamal x value
         self.lineEdit_6 = QtWidgets.QLineEdit(self.formLayoutWidget_2)
         self.lineEdit_6.setObjectName("lineEdit_6")
-        # self.lineEdit_6.setValidator(self.onlyInt)
         self.lineEdit_6.setReadOnly(True)
 
         self.formLayout_2.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.lineEdit_6)
@@ -193,7 +185,6 @@ class mainApp(object):
         # ElGamal k value
         self.lineEdit_7 = QtWidgets.QLineEdit(self.formLayoutWidget_2)
         self.lineEdit_7.setObjectName("lineEdit_7")
-        # self.lineEdit_7.setValidator(self.onlyInt)
         self.lineEdit_7.setReadOnly(True)
 
         self.formLayout_2.setWidget(3, QtWidgets.QFormLayout.FieldRole, self.lineEdit_7)
@@ -252,7 +243,6 @@ class mainApp(object):
         # Diffie-Helman n value
         self.lineEdit_8 = QtWidgets.QLineEdit(self.formLayoutWidget_3)
         self.lineEdit_8.setObjectName("lineEdit_8")
-        # self.lineEdit_8.setValidator(self.onlyInt)
 
         self.formLayout_3.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.lineEdit_8)
         self.label_12 = QtWidgets.QLabel(self.formLayoutWidget_3)
@@ -262,7 +252,6 @@ class mainApp(object):
         # Diffie-Helman g value
         self.lineEdit_9 = QtWidgets.QLineEdit(self.formLayoutWidget_3)
         self.lineEdit_9.setObjectName("lineEdit_9")
-        # self.lineEdit_9.setValidator(self.onlyInt)
 
         self.formLayout_3.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.lineEdit_9)
         self.label_13 = QtWidgets.QLabel(self.formLayoutWidget_3)
@@ -272,7 +261,6 @@ class mainApp(object):
         # Diffie-Helman x value
         self.lineEdit_10 = QtWidgets.QLineEdit(self.formLayoutWidget_3)
         self.lineEdit_10.setObjectName("lineEdit_10")
-        # self.lineEdit_10.setValidator(self.onlyInt)
 
         self.formLayout_3.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.lineEdit_10)
         self.label_14 = QtWidgets.QLabel(self.formLayoutWidget_3)
@@ -282,7 +270,6 @@ class mainApp(object):
         # Diffie-Helman y value
         self.lineEdit_11 = QtWidgets.QLineEdit(self.formLayoutWidget_3)
         self.lineEdit_11.setObjectName("lineEdit_11")
-        # self.lineEdit_11.setValidator(self.onlyInt)
 
         self.formLayout_3.setWidget(3, QtWidgets.QFormLayout.FieldRole, self.lineEdit_11)
 
@@ -566,12 +553,6 @@ class mainApp(object):
 
             if (helper.is_coprime(toitent, e)):
                 d = pow(e, -1, toitent)
-                # d = decimal.Decimal(0.1)
-                # k = 0
-                # while not d == d.to_integral_value():
-                #     k += 1
-                #     d = (decimal.Decimal(1) + decimal.Decimal(k)*decimal.Decimal(toitent)) / decimal.Decimal(e)
-                # d = d.to_integral_value()
 
                 privateKey = f"{d},{n}"
                 self.textEdit_3.append(f">d = {d}")
@@ -832,7 +813,7 @@ class mainApp(object):
                 code = padding + code
                 cipherText += code
             if (not cleanDiv):
-                randomPaddingNumber = str(number.getRandomRange(100,999))
+                randomPaddingNumber = str(number.getRandomRange(100, 999))
                 cipherText = randomPaddingNumber + cipherText
             self.textEdit_3.append(">RSA encryption finished")
             self.textEdit_3.append(">Writing ciphertext to cipherText.ecr")
@@ -879,7 +860,7 @@ class mainApp(object):
                 cipherText_b += code
                 cipherText = cipherText_a + cipherText_b
             if (not cleanDiv):
-                randomPaddingNumber = str(number.getRandomRange(100,999))
+                randomPaddingNumber = str(number.getRandomRange(100, 999))
                 cipherText = randomPaddingNumber + cipherText
             self.textEdit_3.append(">ElGamal encryption finished")
             self.textEdit_3.append(">Writing ciphertext to cipherText.ecr")
@@ -909,7 +890,7 @@ class mainApp(object):
             plainCode = ""
             cleanDiv = len(codedText) % nLength == 0
             if (not cleanDiv):
-                codedText = codedText[3:] 
+                codedText = codedText[3:]
             amount = math.ceil(len(codedText) / nLength)
             for i in range(amount):
                 # print(f"Decrypting phase 1: {(i+1)/amount}")
@@ -980,7 +961,7 @@ class mainApp(object):
             byteArray = []
             charAmount = int(len(plainCode) / 3)
             for i in range(charAmount):
-                block = plainCode[i * 3:i * 3 + 3]    
+                block = plainCode[i * 3:i * 3 + 3]
                 code = int(block)
                 if (not cleanDiv and i == charAmount - 2 and code == 0):
                     pass
